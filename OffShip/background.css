@@ -1,0 +1,28 @@
+body {
+    margin: 1px;
+    background-color: white;
+}
+
+.mainDiv {
+    width: 400px;
+    height: 400px;    
+    margin: 1px;    
+}
+
+.titleText {
+    font-size: 12px;
+    font-weight: bold;
+    font-family: Georgia;
+    vertical-align: top;
+    text-align: justify;
+    /*text-decoration: underline;*/
+}
+
+.introText {
+    font-size: 12px;
+    font-weight: bold;
+    vertical-align: top;
+    text-align: justify;
+    float: left;
+    font-family: Arial;
+}

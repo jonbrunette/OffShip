@@ -1,0 +1,9 @@
+{
+  "name": "off-ship",
+  "version": "0.0.0",
+  "description": "OffShip",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  }
+}

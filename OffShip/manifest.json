@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "OffShip - Online Shopping Carbon Offsets",
+  "version": "1.0.0",
+  "description": "This Chrome Extension monitors online shopping and offers carbon offset opportunities",
+  "short_name": "OffShip",
+  "permissions": [ "activeTab", "declarativeContent", "storage", "<all_urls>" ],
+  "content_scripts": [
+    {
+      "matches": [ "<all_urls>" ],
+      "css": [ "background.css" ],
+      "js": [ "background.js" ]
+    }
+  ],
+  "browser_action": {
+    "default_title": "Gives carbon offset credit options at checkout",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/leaf-128.png",
+      "32": "images/leaf-128.png",
+      "128": "images/leaf-128.png"
+    }
+  }
+}
