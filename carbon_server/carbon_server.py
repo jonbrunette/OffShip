@@ -15,14 +15,7 @@ from cloudant.client import Cloudant
 # You must overwrite the values in api_access below with those from your service credential, that you created in IBM Cloud IAM for Cloudant.
 # The actual values below are to just show the format - and these are no longer valid.
 api_access = {
-  "apikey": "Io-ntxqGpl5UmRBk65L88ldyNqDmTDjCUMxs414qiU4b",
-  "host": "10c15879-bb7b-44d5-bad4-83449f9901a5-bluemix.cloudantnosqldb.appdomain.cloud",
-  "iam_apikey_description": "Auto-generated for key c422df6d-650b-4758-81d2-0a76d64e1d4c",
-  "iam_apikey_name": "doorman",
-  "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/0230584e85b5426aa995a7575621f698::serviceid:ServiceId-dfd52c9d-aeb0-4309-b759-570467a6d20c",
-  "url": "https://10c15879-bb7b-44d5-bad4-83449f9901a5-bluemix.cloudantnosqldb.appdomain.cloud",
-  "username": "10c15879-bb7b-44d5-bad4-83449f9901a5-bluemix"
+
 }
 
 client = Cloudant.iam(
