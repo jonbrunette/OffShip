@@ -7,12 +7,7 @@ from flask import Flask
 from flask_restx import Api, Resource, fields, reqparse
 
 app = Flask(__name__)
-"""
-api = Api(app, version='1.0', title='Cloud Impact Rating API',
-    description='A protoype API system allowing the storage and retrieval of Climate Impact Rating data for products',
-    prefix='/v1'
-)
-"""
+
 api = Api(app, version='1.0', title='Cloud Carbon Project Server API',
     description='An MVP version of an api to retrieve carbon credit projects relevant to a user\'s purchase',
     prefix='/v1'
@@ -33,36 +28,11 @@ client = Cloudant.iam(
     connect=True
 )
 
-"""
-product_ns = api.namespace('project', description='User CIR Product Operations')
-"""
+
 project_ns = api.namespace('project', description='User Cloud Project Operations')
 
 
 # Define the API models we will use (these will show up in the Swagger Specification).
-"""
-rating = api.model('Rating', {
-    'efficiency': fields.Integer(required=False, description='The efficiency-in-use rating (0-9, where 0 is best) of this item'),
-    'energy': fields.Float(required=False, description='The energy (J) to produce this item'),
-    'CO2': fields.Float(required=False, description='The CO2 released (Kg) to produce this item'),
-    'otherGG': fields.Float(required=False, description='The other green house gases released (Kg) to produce this item'),
-    'water': fields.Float(required=False, description='The volume of water (litres) to produce this item'),
-    'plastic': fields.Float(required=False, description='The amout of plastic (Kg) included in this item'),
-    'lifetime': fields.Float(required=False, description='The expected lifetime (years) of this item'),
-    'recyclability': fields.Integer(required=False, description='The recyclability rating (0-9, where 0 is best) of this item'),
-    'repairability': fields.Integer(required=False, description='The Right to Repair rating (0-9, where 0 is best) of this item')
-})
-
-product = api.model('Product', {
-    'id': fields.String(readonly=True, description='The unique product registration identifier'),
-    'barcode_id': fields.String(required=True, description='The barcode for this product id, in EAN-13 format'),
-    'type': fields.String(required=True, description='The type of product'),
-    'category': fields.String(required=True, description='The category of this product, with its type'),
-    'model': fields.String(required=True, description='The model number of this product'),
-    'brand': fields.String(required=True, description='The venfor of this item'),
-    'rating_data': fields.Nested(rating)
-})
-"""
 
 project = api.model('Project', {
     'id' : fields.Integer(readonly=True, description="Carbon offset project UID"),
