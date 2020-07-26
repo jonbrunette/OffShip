@@ -1,3 +1,16 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
 # Logs
 logs
 *.log

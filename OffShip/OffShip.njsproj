@@ -46,7 +46,6 @@
     <Content Include="manifest.json">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="package.json" />
     <Content Include="popup.html">
       <SubType>Code</SubType>
     </Content>
@@ -54,12 +53,17 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="README.md" />
-    <None Include="SampleAmazonPage.html">
+    <None Include="SampleWebPages\SampleAmazonProductPage.html">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="SampleWebPages\SampleAmazonProductPage2" />
+    <None Include="SampleWebPages\SampleAmazonPage.html">
       <SubType>Code</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="images\" />
+    <Folder Include="SampleWebPages\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
 </Project>

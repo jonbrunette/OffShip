@@ -1,26 +1,69 @@
 chrome.runtime.onMessage.addListener(function (request, sender) {
     if (request.action == "getSource") {
-        message.innerText = request.source;        
+        message.innerText = request.source;
+    }
+
+    if (request.action == "getProductDetails") {
+        message.innerText = request.source;
+    }
+
+    if (request.action == "appendMessage") {
+        message.innerHTML += request.source;
+        //message.innerText += request.source;
+    }
+
+    if (request.action == "appendBasketContent") {
+        //basketClone.innerHTML += request.source;
+        //message.innerText += request.source;
+        var tbl = document.getElementById("tblBasketClone");
+        row = tbl.insertRow(0);
+        //var cell0 = row.insertCell(0);
+        //cell0.innerHTML = request.source;
+        row.innerHTML = request.source;
+        //row.innerText = request.source;
+
+        //`<table><tr><td colspan='4'>Found ${count} items:</td></tr> ${strItems}<tr><td colspan='4'></td>${postalCode}</tr></table>`;
     }
 
     if (request.action == "getBasketContent") {
-        basketClone.innerHTML = request.source;        
-        //basketClone.appendChild(request.source);
-        //basketClone.appendChild(JSON.parse(request.source));
-
-        //var tbl = document.createElement("TABLE");
-        //row = tbl.insertRow(0);
-        //var cell0 = row.insertCell(0);
-        //cell0.innerText = "So this worked";
-
-        //basketClone.appendChild(tbl);
+        basketClone.innerHTML = request.source;
     }
 });
 
+function printLocalStorage() {
+    chrome.storage.local.get(null, function (data) {
+
+        if (Object.keys(data).length === 0) {
+            message.innerHTML += "Nothing in local storage";
+        }
+
+        for (var k in data) {
+            message.innerHTML += "<p>Found [" + k + "," + data[k] + "]</p>";
+        }
+    });
+}
+
+function clearLocalStorage() {
+    chrome.storage.local.clear(function () {
+        var error = chrome.runtime.lastError;
+        if (error) {
+            console.error(error);
+        }
+        else {
+            console.log("Cleared local cache");
+            message.innerHTML = "";
+        }
+    });
+}
+
 function onWindowLoad() {
 
-    var message = document.querySelector('#message');    
-    var basketClone = document.querySelector('#basketClone');    
+    var message = document.querySelector('#message');
+    var basketClone = document.querySelector('#basketClone');
+
+    document.getElementById('btnClearCache').addEventListener('click', clearLocalStorage);
+    document.getElementById('btnShowCache').addEventListener('click', printLocalStorage);
+    document.getElementById("actionDiv").style.display = "none";
 
     chrome.tabs.executeScript(null, {
         file: "getPagesSource.js"

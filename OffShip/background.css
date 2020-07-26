@@ -26,3 +26,8 @@ body {
     float: left;
     font-family: Arial;
 }
+
+.rightSide {
+    text-align: right;
+    margin-left: 100px
+}
