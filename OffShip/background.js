@@ -14,10 +14,57 @@ window.onload = function () {
     });
 
     AddActionLinksToPage(document);
+    getPostalCode();
+}
+
+function getPostalCode() {
+    locDiv = document.getElementById('nav-global-location-slot');
+
+    if (typeof itemContentList === 'undefined')
+        return "<unknown>";
+
+    var loc = locDiv.getElementsByClassName("nav-line-2")[0].innerText.trim();
+
+    var storage = chrome.storage.local;
+    var obj = {};
+    obj["location"] = loc;
+    storage.set(obj);
+
+    return loc;
+}
+
+function openCarbonOffset(event) {
+    var clickedElement = event.target;
+    var asin = clickedElement.getAttribute("product-id");
+
+    var postal = getPostalCode();
+
+    var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`;
+    //chrome.tabs.create({ url: newURL });
+    //window.open(`chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`);
+    //window.open(`buyoffset.html?productId=${asin}`);
+
+    //chrome.tabs.create({ 'url': chrome.extension.getURL(newURL) }, function (tab) {
+    //    // Tab opened.
+    //});
+
+    //chrome.tabs.create({ 'url': chrome.extension.getURL(newURL) });
+    //chrome.tabs.create({ 'url': "chrome://newtab"});
+    //chrome.runtime.sendMessage({ action: "openBuyOffset" }, function (response) {
+        
+    //});
+
+    //chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    //    chrome.tabs.sendMessage(tabs[0].id, { action: "openBuyOffset" }, function (response) { });
+    //});
+
+    //chrome.tabs.query({ active: true }, function (tabs) {
+    //    chrome.tabs.sendMessage(tab.id, { action: "openBuyOffset" }, function (response) { });
+    //});    
 }
 
 //window.onload = onWindowLoad;
-function addActionLink(actionListDiv) {
+function addActionLink(actionListDiv, asin) {
 
     //sc-list-item-content ->  sc-action-links
     itemActionList = actionListDiv.getElementsByClassName("sc-action-links");
@@ -32,12 +79,14 @@ function addActionLink(actionListDiv) {
 
     var span = document.createElement("span");
     span.setAttribute("class", "a-declarative a-size-small");
-    span.setAttribute("data-action", "sc-item-action");
+    //span.setAttribute("data-action", "sc-item-action");
 
-    var inputBtn = document.createElement("input");
-    inputBtn.setAttribute("class", "a-declarative");
-    inputBtn.setAttribute("type", "submit");
-    inputBtn.setAttribute("value", "Buy carbon offset for the planet");
+    var inputBtn = document.createElement("input");    
+    inputBtn.setAttribute("class", "a-declarative offsetButtonLink");
+    inputBtn.setAttribute("type", "button");
+    inputBtn.setAttribute("value", "Buy carbon offset for the planet");    
+    inputBtn.setAttribute("product-id", asin);
+    inputBtn.addEventListener('click', openCarbonOffset);
 
     span.appendChild(inputBtn);
 
@@ -72,8 +121,9 @@ function AddActionLinksToPage(document_root) {
 
                         if (typeof itemContentList === 'undefined' || itemContentList.length == 0)
                             continue;
-                        
-                        addActionLink(itemContentList[0]);
+
+                        var asin = innerList[j].getAttribute("data-asin");
+                        addActionLink(itemContentList[0], asin);
                     }
                     catch (innerErr) {
                         console.log("Error in adding ActionLink: " + innerErr.message);

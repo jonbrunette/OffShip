@@ -11,6 +11,13 @@
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 
+# Python cache 
+__pycache__/
+venv/
+
+#Credentials
+credentials.txt
+
 # Logs
 logs
 *.log

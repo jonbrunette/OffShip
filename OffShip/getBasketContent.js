@@ -237,8 +237,9 @@ function getProductDetails(asin) {
 }
 
 function getProductDetailsAndStore(asin, description, link, imgSrc, price) {
+    var url = `https://${window.location.hostname}/gp/product/${asin}/`;
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", link, true);
+    xhr.open("GET", url, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             // JSON.parse does not evaluate the attacker's scripts.
@@ -255,15 +256,6 @@ function getProductDetailsAndStore(asin, description, link, imgSrc, price) {
     return;
 }
 
-function getPostalCode(document_root) {
-    locDiv = document_root.getElementById('nav-global-location-slot');
-
-    if (typeof itemContentList === 'undefined')
-        return "<unknown>";
-
-    return locDiv.getElementsByClassName("nav-line-2")[0].innerText.trim();
-}
-
 function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
     try {
         var itemName = itemDesc.length > 30 ? itemDesc.substr(0, 27) + "..." : itemDesc;
@@ -275,7 +267,8 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
         strPrice = (price).toLocaleString(lang, { style: 'currency', currency: 'EUR' }); //EUR
 
         var strImg = "<img src='" + itemImgSrc + "' alt='" + itemDesc + "' width='64' item-id='" + itemid + "'>";
-        var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href=''>Purchase Offset</a></td>`;
+        //var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href='#' class="myOffsetButtonLink" product-id="${asin}">Purchase Offset</a></td>`;
+        var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td>`;
     }
     catch (err) {
         console.log(err.message);
@@ -300,12 +293,38 @@ function formatItemRowFromProduct(itemid, product) {
     return strRow;
 }
 
+function findCarbonOffset(weightKg, distanceKm) {
+    //Montreal - Shenzhen 12,402 km
+    weightKg = weightKg / 1000; //Need it in tons
+    var url = `https://carbon-footprint-app.mybluemix.net/v1/emission/air-shipping?unitSystem=METRIC&weightInTons=${weightKg}&distance=${distanceKm}`;
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onerror = function () { // only triggers if the request couldn't be made at all
+        console.error("Carbon Resp Error");
+    };
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+
+            appendMessage("Carbon Resp recieved!");
+            // JSON.parse does not evaluate the attacker's scripts.
+            var resp = xhr.responseText;
+            //var carbonObj = JSON.parse(xhr.responseText);
+            
+            //appendMessage("Carbon Resp: " + resp + "-" + carbonObj.emissionFactor);
+            appendMessage("Carbon Resp: " + resp );
+        }
+    }
+
+    xhr.send();
+    return;
+}
+
 function ReadDOMForBasket(document_root) {
    
     var count = 0;
     var list = document_root.getElementsByClassName("sc-list-body");
-    var postalCode = getPostalCode(document_root);
-
+    
     var itemArray = [];
     var innerList = [];
 
@@ -371,5 +390,6 @@ var storageCache = {};
 
 chrome.storage.local.get(null, function (data) {
     storageCache = data;
-    ReadDOMForBasket(document);
+    ReadDOMForBasket(document);    
+    //findCarbonOffset(12, 12402);
 });

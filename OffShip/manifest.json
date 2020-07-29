@@ -4,14 +4,14 @@
   "version": "1.0.0",
   "description": "This Chrome Extension monitors online shopping and offers carbon offset opportunities",
   "short_name": "OffShip",
-  "permissions": [ "activeTab", "declarativeContent", "storage", "<all_urls>", "http://*/*" ],
+  "permissions": [ "tabs", "declarativeContent", "storage", "<all_urls>" ],
   "content_scripts": [
     {
       "matches": [ "<all_urls>" ],
       "css": [ "background.css" ],
-      "js": [ "background.js" ]
+      "js": [ "background.js"]
     }
-  ],
+  ],  
   "background": {
     "scripts": [ "background.js" ]
   },
