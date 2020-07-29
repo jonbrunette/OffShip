@@ -264,11 +264,13 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
         const lang = navigator.language;
 
         //TODO: Fix
-        strPrice = (price).toLocaleString(lang, { style: 'currency', currency: 'EUR' }); //EUR
+        //strPrice = (price).toLocaleString(lang, { style: 'currency', currency: 'EUR' }); //EUR
+
+        strPrice = parseFloat(price).toFixed(2).toLocaleString();
 
         var strImg = "<img src='" + itemImgSrc + "' alt='" + itemDesc + "' width='64' item-id='" + itemid + "'>";
         //var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href='#' class="myOffsetButtonLink" product-id="${asin}">Purchase Offset</a></td>`;
-        var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td>`;
+        var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>$${strPrice}</td>`;
     }
     catch (err) {
         console.log(err.message);
@@ -291,33 +293,6 @@ function formatItemRowFromProduct(itemid, product) {
     var strImg = "<img src='" + product.imgSrc + "' alt='" + product.itemDesc + "' width='64' item-id='" + itemid + "'>";
     var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href=''>Purchase Offset</a></td>`;
     return strRow;
-}
-
-function findCarbonOffset(weightKg, distanceKm) {
-    //Montreal - Shenzhen 12,402 km
-    weightKg = weightKg / 1000; //Need it in tons
-    var url = `https://carbon-footprint-app.mybluemix.net/v1/emission/air-shipping?unitSystem=METRIC&weightInTons=${weightKg}&distance=${distanceKm}`;
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onerror = function () { // only triggers if the request couldn't be made at all
-        console.error("Carbon Resp Error");
-    };
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-
-            appendMessage("Carbon Resp recieved!");
-            // JSON.parse does not evaluate the attacker's scripts.
-            var resp = xhr.responseText;
-            //var carbonObj = JSON.parse(xhr.responseText);
-            
-            //appendMessage("Carbon Resp: " + resp + "-" + carbonObj.emissionFactor);
-            appendMessage("Carbon Resp: " + resp );
-        }
-    }
-
-    xhr.send();
-    return;
 }
 
 function ReadDOMForBasket(document_root) {

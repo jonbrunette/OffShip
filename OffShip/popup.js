@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 
     if (request.action == "appendBasketContent") {
         var tbl = document.getElementById("tblBasketClone");
-        row = tbl.insertRow(0);
+        row = tbl.insertRow(tbl.rows.length);
         row.innerHTML = request.source;
     }
 
@@ -34,7 +34,7 @@ function attachLinksForOffsets() {
 
     var list = document.getElementsByClassName("myOffsetButtonLink");
 
-    message.innerHTML += "Found myOffsetButtonLink:" + list.length;
+    //message.innerHTML += "Found myOffsetButtonLink:" + list.length;
 
     for (i = 0; i < list.length; i++) {
         //onclick = "javascript:showCreditOptions()"
@@ -109,6 +109,8 @@ function onWindowLoad() {
     document.getElementById('btnShowCreditOptions').addEventListener('click', openCreditPage);
     document.getElementById('btnClearCache').addEventListener('click', clearLocalStorage);
     document.getElementById('btnShowCache').addEventListener('click', printLocalStorage);
+    document.getElementById("btnClearCache").style.display = "none";
+    document.getElementById("btnShowCache").style.display = "none";
     //document.getElementById("actionDiv").style.display = "none";
 
     chrome.tabs.executeScript(null, {

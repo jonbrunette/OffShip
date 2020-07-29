@@ -1,3 +1,6 @@
+var weightInKg = 0;
+var carbonObj = {};
+
 function onWindowLoad() {
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -16,6 +19,10 @@ function onWindowLoad() {
         for (var k in data) {
             str += "<p>Found [" + k + "," + data[k] + "]</p>";
             try {
+
+                if (!data[k].startsWith("{"))
+                    continue;
+
                 var product = JSON.parse(data[k]);
 
                 if (typeof product !== 'undefined' && typeof product.id !== 'undefined') {
@@ -24,24 +31,94 @@ function onWindowLoad() {
                     var normalizedWeight = normalizeWeight(product.weight);
                     totalWeight += normalizedWeight;
                 }
-
-                //This works
-                //findCarbonOffset(1, 10);
-                //getCreditOptions(2, "tonne", 3);
             }
             catch (err) {
                 console.error("Error in loading products: " + err);
             }
         }
 
+        weightInKg = (totalWeight / 1000);
+
         document.getElementById("numberItemsSpan").innerText = count;
-        document.getElementById("totalWeightSpan").innerText = (totalWeight / 1000) + " kg";
+        document.getElementById("totalWeightSpan").innerText = weightInKg + " kg";
         //document.getElementById("numberItemsSpan").innerHTML = str;
+
+        var distance = findDistance();
+        findCarbonOffset(weightInKg, distance);        
     });
 
     chrome.storage.local.get("location", function (data) {
         document.getElementById("addressSpan").innerText = data["location"];
-    });    
+    });
+}
+
+var rad = function (x) {
+    return x * Math.PI / 180;
+};
+
+var getDistanceBetweenPoints = function (p1, p2) {
+    var R = 6378137; // Earth’s mean radius in meter
+    var dLat = rad(p2.lat - p1.lat);
+    var dLong = rad(p2.lon - p1.lon);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+        Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d; // returns the distance in meter
+};
+
+//function findDistance() {
+//    var locationapikey = "74ab02290cc6ff718f502b057c9e5382"
+//    var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
+
+//    var xhr = new XMLHttpRequest();
+//    xhr.open("GET", url, true);
+//    xhr.onerror = function () { // only triggers if the request couldn't be made at all
+//        console.error("Carbon Resp Error");
+//    };
+//    xhr.onreadystatechange = function () {
+//        if (xhr.readyState == 4) {
+//            // JSON.parse does not evaluate the attacker's scripts.
+//            var geoObj = JSON.parse(xhr.responseText);
+
+//                //geo_req = requests.get(send_url)
+//                //geo_json = json.loads(geo_req.text)
+//                //lat = geo_json['latitude']
+//                //lon = geo_json['longitude']
+//                //city = geo_json['city']
+
+
+//            //Shenzhen : 22.5431° N, 114.0579° E
+//            //var p1 = JSON.parse(`{"lat": ${geoObj.latitude}, "lon": ${geoObj.longitude}}`);
+//            //var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
+//            var p1 = "{lat: 45.46500015258789, lon: -73.5707015991211}";
+//            //var p1 = (`{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}`);
+//            var p2 = (`{lat: 22.5431, lon: 114.0579}`);
+
+//            var distance = getDistanceBetweenPoints(p1, p2) / 1000;
+
+//            document.getElementById("travelDistanceSpan").innerText = distance + " lat/lon: " + `{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}` + "p1:" + p1;
+//            //document.getElementById("travelDistanceSpan").innerText = xhr.responseText;
+//        }
+//    }
+
+//    xhr.send();
+//    return;
+//}
+
+
+function findDistance() {
+    
+    //var p1 = JSON.parse(`{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}`);    
+    var p1 = JSON.parse(`{"lat": 45.46500015258789, "lon": -73.5707015991211}`);
+    var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
+
+    var distance = getDistanceBetweenPoints(p1, p2) / 1000;
+    distance = Math.round((distance + Number.EPSILON) * 100) / 100;
+    document.getElementById("travelDistanceSpan").innerText = distance.toLocaleString();
+        
+    return distance;
 }
 
 function getCreditOptions(amount, units, numberOfOptions) {
@@ -53,13 +130,29 @@ function getCreditOptions(amount, units, numberOfOptions) {
         console.error("Carbon Resp Error");
     };
     xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-
-            message.innerHTML += ("Carbon Choices recieved!");
+        if (xhr.readyState == 4) {            
             // JSON.parse does not evaluate the attacker's scripts.
             //[{ "id": 4, "name": "For Peat's Sake", "description": "The Katingan Project reduced over 7.5 mm tonnes of CO2 each year by protecting and restoring 157000 hectares of the peat swamp ecosystem: one of the largest remaining of its kind.", "location": "Indonesia", "cost": 6.6, "total_cost": "19.8", "url": "https://www.cooleffect.org/content/project/for-peats-sake" }, { "id": 5, "name": "Tri-City Forest Project", "description": " Three towns that realize the impact of climate change coming together to protect their combined 6500-acre watershed lands.", "location": " Massachusets", "cost": 9.34, "total_cost": "28.02", "url": "https://www.cooleffect.org/content/project/tri-city-forest-project" }, { "id": 1, "name": "Brazilian Amazon Rosewood Conservation Project", "description": " Preventing deforestation & giving degraded forests an opportunity to regenerate and improving the livelihoods of local Riverine families.", "location": "Brazil", "cost": 3.57, "total_cost": "10.71", "url": "https://www.cooleffect.org/content/project/brazilian-amazon-rosewood-conservation-project" }]
-            var offsetObj = JSON.parse(xhr.responseText);
-            document.getElementById("offsetOptionsDiv").innerHTML += ("Carbon choices: " + xhr.responseText);
+            var offsetList = JSON.parse(xhr.responseText);
+            //document.getElementById("offsetOptionsDiv").innerHTML += ("Carbon choices: " + xhr.responseText);
+
+            var table = document.getElementById("offsetOptionsTbl");
+
+            for (var k in offsetList) {
+                //str += "<p>Found [" + k + "," + offsetList[k] + "]</p>";
+                try {
+                    var cost = offsetList[k].cost.toFixed(2).toLocaleString();
+                    var strRow = `<td><a href="${offsetList[k].url}" alt="${offsetList[k].name}">${offsetList[k].name}</a></td><td>$${cost}</td><td>${offsetList[k].description}</td>`;
+                    
+                    row = table.insertRow(table.rows.length);
+                    row.innerHTML = strRow;
+                }
+                catch (err) {
+                    console.error("Error in loading products: " + err);
+                }
+            }
+
+            //document.getElementById("offsetOptionsDiv").innerHTML += "Carbon choices: " + offsetObj;
         }
     }
 
@@ -80,10 +173,11 @@ function findCarbonOffset(weightKg, distanceKm) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             // JSON.parse does not evaluate the attacker's scripts.
-            var carbonObj = JSON.parse(xhr.responseText);
-
             //{ "unit": "kilograms/ton-km", "emissionFactor": 0.0079 }
-            message.innerHTML += ("Carbon emission factor: " + carbonObj.emissionFactor);
+            carbonObj = JSON.parse(xhr.responseText);
+            document.getElementById("emissionTotalSpan").innerText = `${carbonObj.emissionFactor} in ${carbonObj.unit}`;
+
+            getCreditOptions(carbonObj.emissionFactor, "tonne", 3);
         }
     }
 
