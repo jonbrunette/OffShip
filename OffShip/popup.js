@@ -37,8 +37,6 @@ function attachLinksForOffsets() {
     //message.innerHTML += "Found myOffsetButtonLink:" + list.length;
 
     for (i = 0; i < list.length; i++) {
-        //onclick = "javascript:showCreditOptions()"
-        //list[i].setAttribute("onclick", "javascript:showCreditOptions()");
         list[i].addEventListener('click', openCreditPage);
     }
 }
@@ -78,14 +76,6 @@ function clearLocalStorage() {
 
 function myTest() {
     alert("This was a test <popup>");
-}
-
-
-function showCreditOptions() {
-    document.getElementById("basketClone").style.display = "none";
-    document.getElementById("offsetOptionsDiv").style.display = "inline";
-
-    getCreditOptions(2, "tonne", 3);
 }
 
 function openCreditPage() {

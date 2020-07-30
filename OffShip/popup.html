@@ -5,18 +5,23 @@
     <title>OffShip Extenstion</title>
     <script src="popup.js"></script>
     <link rel="stylesheet" href="background.css">
+    <link rel="stylesheet" href="w3.css">
 </head>
 <body>
     <div class="mainDiv">
-        <img src="images/leaf-128.png" width="32" alt="OffShip Logo" />
-        <span class="titleText">OffShip - Carbon Credits</span>
-        <span class="introText">Purchase carbon offset credits for your online shopping habbits</span>
-        <div id='basketClone'>
+        <div style="width: auto; top: 4px; left: 4px; float:left;">
+            <img src="images/leaf-128.png" width="32" alt="OffShip Logo" style="float:left;" />
+            <h4 style="float:right; margin-left:4px; margin-top: auto; vertical-align: text-top">OffShip - Carbon Credits</h4>
+        </div>
+        <div style="clear: left; float: left;">
+            <span>Purchase carbon offset credits for your online shopping habbits</span>
+        </div>
+        <div id='basketClone' style="width:100%; overflow-y: auto; height:65%; ">
             <table id="tblBasketClone"></table>
         </div>
         <div id="offsetOptionsDiv"></div>
         <div id='message'></div>
-        <div id="actionDiv" class="rightSide">            
+        <div id="actionDiv" class="w3-display-bottomright w3-padding-large">
             <button id="btnShowCache" type="button" value="Show Cache">Show Cache</button>
             <button id="btnClearCache" type="button" value="Clear Cache">Clear</button>
             <button id="btnShowCreditOptions" type="button" value="Show Carbon Credit Options">Show Carbon Credit Options</button>

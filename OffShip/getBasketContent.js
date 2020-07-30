@@ -126,6 +126,8 @@ function extractProductDataFromTable(table) {
                 dimentions = row.cells[j + 1].innerText.trim();
             }
 
+            //todo: amazon.co.uk not same format
+
             if (foundDimentions && foundWeight)
                 break;
         }

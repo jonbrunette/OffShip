@@ -69,7 +69,9 @@ var getDistanceBetweenPoints = function (p1, p2) {
 };
 
 //function findDistance() {
-//    var locationapikey = "74ab02290cc6ff718f502b057c9e5382"
+//todo: <place your key here>
+
+//    var locationapikey = "<place your key here>"
 //    var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
 //    var xhr = new XMLHttpRequest();
@@ -185,11 +187,13 @@ function findCarbonOffset(weightKg, distanceKm) {
     return;
 }
 
+///Will return weight in grams (g)
 function normalizeWeight(weightStr) {
 
     var weight = 0;
     var weightStr = weightStr.trim().toLowerCase();
 
+    //Metric
     var index = weightStr.indexOf("kg");
 
     if (index > -1) {
@@ -204,7 +208,24 @@ function normalizeWeight(weightStr) {
         weightStr = weightStr.substr(0, index).trim();
         weight = parseFloat(weightStr);
         return weight;
-    }    
+    }
+
+    //imperial
+    index = weightStr.indexOf("pounds");
+
+    if (index > -1) {
+        weightStr = weightStr.substr(0, index).trim();
+        weight = parseFloat(weightStr) * 453.592;
+        return weight;
+    }
+
+    index = weightStr.indexOf("ounces");
+
+    if (index > -1) {
+        weightStr = weightStr.substr(0, index).trim();
+        weight = parseFloat(weightStr) * 28.35;
+        return weight;
+    }
 }
 
 window.onload = onWindowLoad;
