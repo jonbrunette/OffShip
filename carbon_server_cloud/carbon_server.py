@@ -26,18 +26,6 @@ with open("credentials.txt", "r") as f:
     credentials = f.read()
     api_access = ast.literal_eval(credentials)
 
-
-api_access = {
- "apikey": "hKViK1hMEXZ6dXE4iDQxj08VrGGQX_DuRRQGVAzYyMec",
-  "host": "10c15879-bb7b-44d5-bad4-83449f9901a5-bluemix.cloudantnosqldb.appdomain.cloud",
-  "iam_apikey_description": "Auto-generated for key a1ffcc60-f909-494d-851f-31c188eb1a9e",
-  "iam_apikey_name": "Service credentials-1",
-  "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/0230584e85b5426aa995a7575621f698::serviceid:ServiceId-ef74dd34-dbc5-4557-b185-5dd347341615",
-  "url": "https://10c15879-bb7b-44d5-bad4-83449f9901a5-bluemix.cloudantnosqldb.appdomain.cloud",
-  "username": "10c15879-bb7b-44d5-bad4-83449f9901a5-bluemix"
- }
-
 client = Cloudant.iam(
     api_access['username'],
     api_access['apikey'],
