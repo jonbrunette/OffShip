@@ -1,0 +1,5 @@
+---
+applications:
+ - name: CarbonCredits
+   random-route: true
+   memory: 256M
