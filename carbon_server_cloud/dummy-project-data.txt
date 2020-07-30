@@ -1,0 +1,6 @@
+id,name,description,location,cost,url
+1,Brazilian Amazon Rosewood Conservation Project, Preventing deforestation & giving degraded forests an opportunity to regenerate and improving the livelihoods of local Riverine families.,Brazil,3.57,https://www.cooleffect.org/content/project/brazilian-amazon-rosewood-conservation-project
+2,Native Alaskans Saving Lands, Donations go to preserving an 8618 acre forest project in Southeast Alaska that is home to one of the largest population of black bears in the world.,Alaska,10.99, https://www.cooleffect.org/content/project/native-alaskans-saving-lands
+3,Biogas Digesters and Clean Cookstoves, This project builds biogas digesters that convert organic waste into clean renewable energy to fuel clean cookstoves.,China,5.02,https://www.cooleffect.org/content/project/sichuan-china
+4,For Peat's Sake,The Katingan Project reduced over 7.5 mm tonnes of CO2 each year by protecting and restoring 157000 hectares of the peat swamp ecosystem: one of the largest remaining of its kind.,Indonesia,6.60,https://www.cooleffect.org/content/project/for-peats-sake
+5,Tri-City Forest Project, Three towns that realize the impact of climate change coming together to protect their combined 6500-acre watershed lands., Massachusets,9.34,https://www.cooleffect.org/content/project/tri-city-forest-project
