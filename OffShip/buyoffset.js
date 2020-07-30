@@ -43,8 +43,7 @@ function onWindowLoad() {
         document.getElementById("totalWeightSpan").innerText = weightInKg + " kg";
         //document.getElementById("numberItemsSpan").innerHTML = str;
 
-        var distance = findDistance();
-        findCarbonOffset(weightInKg, distance);        
+        findDistance();
     });
 
     chrome.storage.local.get("location", function (data) {
@@ -68,60 +67,54 @@ var getDistanceBetweenPoints = function (p1, p2) {
     return d; // returns the distance in meter
 };
 
-//function findDistance() {
-//todo: <place your key here>
-
-//    var locationapikey = "<place your key here>"
-//    var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
-
-//    var xhr = new XMLHttpRequest();
-//    xhr.open("GET", url, true);
-//    xhr.onerror = function () { // only triggers if the request couldn't be made at all
-//        console.error("Carbon Resp Error");
-//    };
-//    xhr.onreadystatechange = function () {
-//        if (xhr.readyState == 4) {
-//            // JSON.parse does not evaluate the attacker's scripts.
-//            var geoObj = JSON.parse(xhr.responseText);
-
-//                //geo_req = requests.get(send_url)
-//                //geo_json = json.loads(geo_req.text)
-//                //lat = geo_json['latitude']
-//                //lon = geo_json['longitude']
-//                //city = geo_json['city']
-
-
-//            //Shenzhen : 22.5431° N, 114.0579° E
-//            //var p1 = JSON.parse(`{"lat": ${geoObj.latitude}, "lon": ${geoObj.longitude}}`);
-//            //var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
-//            var p1 = "{lat: 45.46500015258789, lon: -73.5707015991211}";
-//            //var p1 = (`{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}`);
-//            var p2 = (`{lat: 22.5431, lon: 114.0579}`);
-
-//            var distance = getDistanceBetweenPoints(p1, p2) / 1000;
-
-//            document.getElementById("travelDistanceSpan").innerText = distance + " lat/lon: " + `{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}` + "p1:" + p1;
-//            //document.getElementById("travelDistanceSpan").innerText = xhr.responseText;
-//        }
-//    }
-
-//    xhr.send();
-//    return;
-//}
-
-
 function findDistance() {
     
-    //var p1 = JSON.parse(`{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}`);    
-    var p1 = JSON.parse(`{"lat": 45.46500015258789, "lon": -73.5707015991211}`);
-    var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
+    var locationapikey = "<place your key here>";
+    var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
-    var distance = getDistanceBetweenPoints(p1, p2) / 1000;
-    distance = Math.round((distance + Number.EPSILON) * 100) / 100;
-    document.getElementById("travelDistanceSpan").innerText = distance.toLocaleString();
-        
-    return distance;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onerror = function () { // only triggers if the request couldn't be made at all
+        console.error("Location service response Error");
+    };
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            // JSON.parse does not evaluate the attacker's scripts.
+            var geoObj = JSON.parse(xhr.responseText);
+
+            //Shenzhen : 22.5431° N, 114.0579° E
+            var p1 = JSON.parse(`{"lat": ${geoObj.latitude}, "lon": ${geoObj.longitude}}`);
+            var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
+            
+            var distance = getDistanceBetweenPoints(p1, p2) / 1000;
+            distance = Math.round((distance + Number.EPSILON) * 100) / 100;
+            document.getElementById("travelDistanceSpan").innerText = distance.toLocaleString();
+
+            findCarbonOffset(weightInKg, distance);
+
+            return distance;
+        }
+    }
+
+    xhr.send();
+    return;
 }
+
+//Can use these static values for testing
+//function findDistance() {
+    
+//    //var p1 = JSON.parse(`{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}`);    
+//    var p1 = JSON.parse(`{"lat": 45.46500015258789, "lon": -73.5707015991211}`);
+//    var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
+
+//    var distance = getDistanceBetweenPoints(p1, p2) / 1000;
+//    distance = Math.round((distance + Number.EPSILON) * 100) / 100;
+//    document.getElementById("travelDistanceSpan").innerText = distance.toLocaleString();
+
+//    findCarbonOffset(weightInKg, distance);
+        
+//    return distance;
+//}
 
 function getCreditOptions(amount, units, numberOfOptions) {
     var url = `http://127.0.0.1:5000/v1/project/project_with_cost?units=${units}&amount=${amount}&n=${numberOfOptions}`;
@@ -144,7 +137,7 @@ function getCreditOptions(amount, units, numberOfOptions) {
                 //str += "<p>Found [" + k + "," + offsetList[k] + "]</p>";
                 try {
                     var cost = offsetList[k].cost.toFixed(2).toLocaleString();
-                    var strRow = `<td><a href="${offsetList[k].url}" alt="${offsetList[k].name}">${offsetList[k].name}</a></td><td>$${cost}</td><td>${offsetList[k].description}</td>`;
+                    var strRow = `<td><a href="${offsetList[k].url}" alt="${offsetList[k].name}">${offsetList[k].name}</a></td><td class="w3-centered w3-cell-top">$${cost}</td><td class="w3-cell-top">${offsetList[k].description}</td>`;
                     
                     row = table.insertRow(table.rows.length);
                     row.innerHTML = strRow;
@@ -189,6 +182,9 @@ function findCarbonOffset(weightKg, distanceKm) {
 
 ///Will return weight in grams (g)
 function normalizeWeight(weightStr) {
+
+    if (weightStr == 0)
+        return 0;
 
     var weight = 0;
     var weightStr = weightStr.trim().toLowerCase();
