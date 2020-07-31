@@ -1,0 +1,12 @@
+/.classpath
+/.project
+/.settings
+/src/main/resources/application-local.properties
+target/
+build/
+Dockerfile
+Dockerfile-tools
+.dockerignore
+.git/
+.github/
+.gitignore
