@@ -55,6 +55,12 @@ class ProjectDAO(object):
         else:
             self.cp_db=client.create_database(db_name)
             self.import_data()
+        
+        # There's something strange going on here. If I don't call list (or call say the get method)
+        # then the cp_db object is not populated with any results. This makes the first 
+        # getnitems call to the services fail
+        all_items = self.list()
+        del all_items
             
     def import_data(self):
         """
