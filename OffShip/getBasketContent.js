@@ -69,19 +69,30 @@ function extractProductData(pageStr) {
         var details1 = extractProductDataFromTable(table);
         var details2 = extractProductDataFromTable(table2);
 
-        weight = details1.weight;
-        dimentions = details1.dimentions;
+        if (details1 === undefined) {
+            console.warn("Could not load Technical Details table");
+        }
+        else {
 
-        if (details1.shippingWeight !== 0) {
-            weight = details1.shippingWeight;
+            weight = details1.weight;
+            dimentions = details1.dimentions;
+
+            if (details1.shippingWeight !== 0) {
+                weight = details1.shippingWeight;
+            }
         }
 
-        if (details2.shippingWeight !== 0) {
-            weight = details2.shippingWeight;
+        if (details2 === undefined) {
+            console.warn("Could not load Additional Information table");
         }
+        else {
+            if (details2.shippingWeight !== 0) {
+                weight = details2.shippingWeight;
+            }
 
-        if (details2.dimentions !== "") {
-            dimentions = details2.dimentions;
+            if (details2.dimentions !== "") {
+                dimentions = details2.dimentions;
+            }
         }
     }
     else {
@@ -99,7 +110,7 @@ function extractProductData(pageStr) {
 
 function extractProductDataFromTable(table) {
 
-    if (typeof table === 'undefined') {
+    if (typeof table === 'undefined' || typeof table.rows === 'undefined') {
         return undefined;
     }
         
@@ -170,6 +181,34 @@ function updateProductInLocalCache(asin, itemWeight, dimentions) {
     });
 }
 
+
+function removeProductInLocalCache(asin) {
+    
+    //Update in local-local cache as well
+    storageCache[asin] = "";
+
+    var storage = chrome.storage.local;
+    var obj = {};
+    obj[asin] = "";
+    storage.set(obj);
+    console.log('Cleared product with id:' + asin);
+}
+
+function adjustCache(itemArray) {
+    //todo fix
+    //store itemArray in cache and read on buyoffset page
+
+    //for (var item in storageCache) {
+    //    if (itemArray.includes(item)) {
+    //        continue;
+    //    }
+
+    //    //remove it it is no longer in the basket
+    //    removeProductInLocalCache(item);
+    //}
+
+}
+
 function updateFullProductInLocalCache(asin, description, link, imgSrc, price, itemWeight, dimentions) {
 
     var updateProduct = { id: asin, itemDesc: description, link: link, imgSrc: imgSrc, price: price, weight: itemWeight, dimentions: dimentions };
@@ -230,6 +269,8 @@ function getProductDetails(asin) {
             var resp = xhr.responseText;
             var productData = extractProductData(resp);
 
+            //appendMessage(resp);
+
             updateProductInLocalCache(asin, productData.weight, productData.dimentions);
         }
     }
@@ -250,6 +291,7 @@ function getProductDetailsAndStore(asin, description, link, imgSrc, price) {
             var productData = extractProductData(resp);
 
             //appendMessage("Inner ASIN: " + asin + ", " + price + ", " + productData.dimentions);
+            //appendMessage(resp);
             updateFullProductInLocalCache(asin, description, link, imgSrc, price, productData.weight, productData.dimentions);
         }
     }
@@ -316,11 +358,12 @@ function ReadDOMForBasket(document_root) {
 
                 for (j = 0; j < innerList.length; j++) {
                     try {
-                        itemArray.push(innerList[j]);
 
                         var itemid = innerList[j].getAttribute("data-itemid");
                         var price = innerList[j].getAttribute("data-price");
                         var asin = innerList[j].getAttribute("data-asin");
+
+                        itemArray.push(asin);
 
                         itemContentList = innerList[j].getElementsByClassName("sc-list-item-content");
 
@@ -332,7 +375,7 @@ function ReadDOMForBasket(document_root) {
                         var itemImgSrc = img.getAttribute("src");
                         var link = `https://${window.location.hostname}/gp/product/${asin}/`;
 
-                        if (typeof storageCache[asin] === 'undefined') {
+                        if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
                             getProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
                             console.log(`${asin} not found in local cache, adding now`);
                         }
@@ -344,6 +387,8 @@ function ReadDOMForBasket(document_root) {
                             action: "appendBasketContent",
                             source: rowStr
                         });
+
+                        adjustCache(itemArray);
                     }
                     catch (innerErr) {
                         console.log(innerErr.message);
@@ -367,6 +412,5 @@ var storageCache = {};
 
 chrome.storage.local.get(null, function (data) {
     storageCache = data;
-    ReadDOMForBasket(document);    
-    //findCarbonOffset(12, 12402);
+    ReadDOMForBasket(document);
 });

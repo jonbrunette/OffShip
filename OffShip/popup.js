@@ -10,6 +10,7 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
     if (request.action == "appendMessage") {
         message.innerHTML += request.source;
         //message.innerText += request.source;
+        //console.log(request.source);
     }
 
     if (request.action == "appendBasketContent") {

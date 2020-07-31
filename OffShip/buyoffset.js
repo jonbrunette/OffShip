@@ -117,7 +117,8 @@ function findDistance() {
 //}
 
 function getCreditOptions(amount, units, numberOfOptions) {
-    var url = `http://127.0.0.1:5000/v1/project/project_with_cost?units=${units}&amount=${amount}&n=${numberOfOptions}`;
+    //var url = `http://127.0.0.1:5000/v1/project/project_with_cost?units=${units}&amount=${amount}&n=${numberOfOptions}`;
+    var url = `http://carboncredits-smart-parrot-fs.mybluemix.net/v1/project/project_with_cost?units=${units}&amount=${amount}&n=${numberOfOptions}`;
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
@@ -125,7 +126,7 @@ function getCreditOptions(amount, units, numberOfOptions) {
         console.error("Carbon Resp Error");
     };
     xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {            
+        if (xhr.readyState == 4) {
             // JSON.parse does not evaluate the attacker's scripts.
             //[{ "id": 4, "name": "For Peat's Sake", "description": "The Katingan Project reduced over 7.5 mm tonnes of CO2 each year by protecting and restoring 157000 hectares of the peat swamp ecosystem: one of the largest remaining of its kind.", "location": "Indonesia", "cost": 6.6, "total_cost": "19.8", "url": "https://www.cooleffect.org/content/project/for-peats-sake" }, { "id": 5, "name": "Tri-City Forest Project", "description": " Three towns that realize the impact of climate change coming together to protect their combined 6500-acre watershed lands.", "location": " Massachusets", "cost": 9.34, "total_cost": "28.02", "url": "https://www.cooleffect.org/content/project/tri-city-forest-project" }, { "id": 1, "name": "Brazilian Amazon Rosewood Conservation Project", "description": " Preventing deforestation & giving degraded forests an opportunity to regenerate and improving the livelihoods of local Riverine families.", "location": "Brazil", "cost": 3.57, "total_cost": "10.71", "url": "https://www.cooleffect.org/content/project/brazilian-amazon-rosewood-conservation-project" }]
             var offsetList = JSON.parse(xhr.responseText);
