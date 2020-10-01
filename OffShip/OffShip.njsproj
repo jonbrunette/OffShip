@@ -40,6 +40,9 @@
     <Content Include="background.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="getAppleBasketContent.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="getBasketContent.js" />
     <Content Include="getPagesSource.js">
       <SubType>Code</SubType>
@@ -56,6 +59,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="README.md" />
+    <None Include="SampleWebPages\SampleAppleCartPage.html">
+      <SubType>Code</SubType>
+    </None>
     <Content Include="w3.css" />
     <None Include="SampleWebPages\SampleAmazonProductPage.html">
       <SubType>Code</SubType>

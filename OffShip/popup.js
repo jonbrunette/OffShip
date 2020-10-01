@@ -75,10 +75,6 @@ function clearLocalStorage() {
     });
 }
 
-function myTest() {
-    alert("This was a test <popup>");
-}
-
 function openCreditPage() {
     var asin = "blah";
     var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`;
@@ -100,9 +96,11 @@ function onWindowLoad() {
     document.getElementById('btnShowCreditOptions').addEventListener('click', openCreditPage);
     document.getElementById('btnClearCache').addEventListener('click', clearLocalStorage);
     document.getElementById('btnShowCache').addEventListener('click', printLocalStorage);
+    //document.getElementById('btnShowPageContent').addEventListener('click', printPageContent);
     document.getElementById("btnClearCache").style.display = "none";
     document.getElementById("btnShowCache").style.display = "none";
     //document.getElementById("actionDiv").style.display = "none";
+    document.getElementById("btnShowPageContent").style.display = "none";
 
     chrome.tabs.executeScript(null, {
         file: "getPagesSource.js"
@@ -123,6 +121,15 @@ function onWindowLoad() {
             else {
                 attachLinksForOffsets();
             }
+    });
+
+    chrome.tabs.executeScript(null, {
+        file: "getAppleBasketContent.js"
+    }, function () {
+        // If you try and inject into an extensions page or the webstore/NTP you'll get an error
+        if (chrome.runtime.lastError) {
+            message.innerText = 'There was an error injecting script : \n' + chrome.runtime.lastError.message;
+        }
     });
 }
 

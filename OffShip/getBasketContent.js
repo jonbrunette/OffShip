@@ -310,8 +310,9 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
         //TODO: Fix
         //strPrice = (price).toLocaleString(lang, { style: 'currency', currency: 'EUR' }); //EUR
 
-        strPrice = parseFloat(price).toFixed(2).toLocaleString();
-
+        strPrice = price;
+        //strPrice = parseFloat(price).toFixed(2).toLocaleString();
+        
         var strImg = "<img src='" + itemImgSrc + "' alt='" + itemDesc + "' width='64' item-id='" + itemid + "'>";
         //var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href='#' class="myOffsetButtonLink" product-id="${asin}">Purchase Offset</a></td>`;
         var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>$${strPrice}</td>`;

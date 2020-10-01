@@ -47,7 +47,14 @@ function onWindowLoad() {
     });
 
     chrome.storage.local.get("location", function (data) {
-        document.getElementById("addressSpan").innerText = data["location"];
+
+        if (typeof data["location"] === 'undefined') {
+            //TODO: Optimize this
+            //findAndShowLocation();
+            document.getElementById("addressSpan").innerText = "Montreal";
+        }
+        else
+            document.getElementById("addressSpan").innerText = data["location"];
     });
 }
 
@@ -102,7 +109,7 @@ function findDistance() {
 
 //Can use these static values for testing
 //function findDistance() {
-    
+
 //    //var p1 = JSON.parse(`{lat: ${geoObj.latitude}, lon: ${geoObj.longitude}}`);    
 //    var p1 = JSON.parse(`{"lat": 45.46500015258789, "lon": -73.5707015991211}`);
 //    var p2 = JSON.parse(`{"lat": 22.5431, "lon": 114.0579}`);
@@ -112,9 +119,32 @@ function findDistance() {
 //    document.getElementById("travelDistanceSpan").innerText = distance.toLocaleString();
 
 //    findCarbonOffset(weightInKg, distance);
-        
+
 //    return distance;
 //}
+
+function findAndShowLocation() {
+    var locationapikey = "74ab02290cc6ff718f502b057c9e5382";
+    //var locationapikey = "<place your key here>";
+    var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onerror = function () { // only triggers if the request couldn't be made at all
+        console.error("Location service response Error");
+    };
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            // JSON.parse does not evaluate the attacker's scripts.
+            var geoObj = JSON.parse(xhr.responseText);
+
+            document.getElementById("addressSpan").innerText = geoObj.city
+        }
+    }
+
+    xhr.send();
+    return;
+}
 
 function getCreditOptions(amount, units, numberOfOptions) {
     //var url = `http://127.0.0.1:5000/v1/project/project_with_cost?units=${units}&amount=${amount}&n=${numberOfOptions}`;
