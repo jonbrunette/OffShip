@@ -60,6 +60,7 @@ function ReadDOMForAppleBasket(document_root) {
             catch (innerErr) {
                 console.log(innerErr.message);
                 appendMessage("Error in getting product details: " + innerErr.message);
+                sendError(window.location.href, innerErr.message, "Error in getting product details");
                 return "Error in getting product details: " + innerErr.message;
             }
 
@@ -69,6 +70,7 @@ function ReadDOMForAppleBasket(document_root) {
     catch (err) {
         console.log(err.message);
         appendMessage(err.message);
+        sendError(window.location.href, err.message, "Error in ReadDOMForAppleBasket");
         return err.message;
     }
 }
@@ -90,9 +92,10 @@ function getAppleProductDetailsAndStore(asin, description, link, imgSrc, price) 
     updateFullProductInLocalCache(asin, description, link, imgSrc, price, weight, dimentions);
 }
 
-var storageCache = {};
-
 chrome.storage.local.get(null, function (data) {
     storageCache = data;
-    ReadDOMForAppleBasket(document);
+
+    if (window.location.hostname.toLocaleLowerCase().includes("apple.")) {
+        ReadDOMForAppleBasket(document);
+    }
 });

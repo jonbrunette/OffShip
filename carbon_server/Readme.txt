@@ -8,7 +8,7 @@ Jonathan setup:
 5) pip install flask
 6) pip install flask_restx
 7) pip install cloudant
-8) \venv\Scripts\activate
+8) venv\Scripts\activate
 9) python carbon_server.py
 
 Should now see "Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)"
