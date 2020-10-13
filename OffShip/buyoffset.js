@@ -25,7 +25,7 @@ function onWindowLoad() {
 
                 var product = JSON.parse(data[k]);
 
-                if (typeof product !== 'undefined' && typeof product.id !== 'undefined') {
+                if (typeof product !== 'undefined' && typeof product.asin !== 'undefined') {
                     count++;
 
                     var normalizedWeight = normalizeWeight(product.weight);
@@ -77,6 +77,7 @@ var getDistanceBetweenPoints = function (p1, p2) {
 function findDistance() {
     
     var locationapikey = "<place your key here>";
+    
     var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
     var xhr = new XMLHttpRequest();

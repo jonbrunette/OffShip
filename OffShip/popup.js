@@ -103,7 +103,7 @@ function onWindowLoad() {
     document.getElementById("btnShowPageContent").style.display = "none";
 
     chrome.tabs.executeScript(null, {
-        file: "CommonBasket.js"
+        file: "StoreScripts/CommonBasket.js"
     }, function () {
         // If you try and inject into an extensions page or the webstore/NTP you'll get an error
         if (chrome.runtime.lastError) {
@@ -121,7 +121,7 @@ function onWindowLoad() {
     });
 
     chrome.tabs.executeScript(null, {
-        file: "getBasketContent.js"
+        file: "StoreScripts/getBasketContent.js"
     }, function () {
         // If you try and inject into an extensions page or the webstore/NTP you'll get an error
             if (chrome.runtime.lastError) {
@@ -133,7 +133,7 @@ function onWindowLoad() {
     });
 
     chrome.tabs.executeScript(null, {
-        file: "getAppleBasketContent.js"
+        file: "StoreScripts/getAppleBasketContent.js"
     }, function () {
         // If you try and inject into an extensions page or the webstore/NTP you'll get an error
         if (chrome.runtime.lastError) {
@@ -142,11 +142,51 @@ function onWindowLoad() {
     });
 
     chrome.tabs.executeScript(null, {
-        file: "getBestBuyBasketContent.js"
+        file: "StoreScripts/getBestBuyBasketContent.js"
     }, function () {
         // If you try and inject into an extensions page or the webstore/NTP you'll get an error
         if (chrome.runtime.lastError) {
             message.innerText = 'There was an error injecting script : \n' + chrome.runtime.lastError.message;
+        }
+    });
+
+    loadSummaryFromCache();
+}
+
+function loadSummaryFromCache() {
+    chrome.storage.local.get(null, function (data) {
+
+        if (Object.keys(data).length === 0) {
+            return;
+        }
+
+        var count = 0;
+        var str = "";
+        
+        for (var k in data) {
+            str += "<p>Found [" + k + "," + data[k] + "]</p>";
+            try {
+
+                if (!data[k].startsWith("{"))
+                    continue;
+
+                var product = JSON.parse(data[k]);
+
+                if (typeof product !== 'undefined') {
+                    count++;
+
+                    var rowStr = formatItemRow(product.asin, product.asin, product.description, product.imgSrc, product.price);
+                    
+                    var tbl = document.getElementById("tblBasketClone");
+                    row = tbl.insertRow(tbl.rows.length);
+                    row.innerHTML = rowStr;
+                }
+                else
+                    message.innerHTML += "product is undefined";
+            }
+            catch (err) {
+                console.error("Error in loading products: " + err);
+            }
         }
     });
 }

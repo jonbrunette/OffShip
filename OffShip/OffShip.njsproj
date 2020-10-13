@@ -30,7 +30,11 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Debug.html" />
     <Content Include="buyoffset.js" />
+    <Content Include="CommonBasket.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="content.js">
       <SubType>Code</SubType>
     </Content>
@@ -49,10 +53,12 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="images\leaf-128.png" />
+    <Content Include="images\minus.png" />
     <Content Include="manifest.json">
       <SubType>Code</SubType>
     </Content>
     <Content Include="buyoffset.html" />
+    <Content Include="Debug.js" />
     <Content Include="popup.html">
       <SubType>Code</SubType>
     </Content>

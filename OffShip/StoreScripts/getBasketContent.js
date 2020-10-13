@@ -165,7 +165,8 @@ function getProductDetailsAndStore(asin, description, link, imgSrc, price) {
 
             //appendMessage("Inner ASIN: " + asin + ", " + price + ", " + productData.dimentions);
             //appendMessage(resp);
-            updateFullProductInLocalCache(asin, description, link, imgSrc, price, productData.weight, productData.dimentions);
+            var item = { store: "Amazon", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: productData.weight, dimentions: productData.dimentions };
+            updateFullProductInLocalCache(item);
         }
     }
 
@@ -210,17 +211,16 @@ function ReadDOMForBasket(document_root) {
                         var link = `https://${window.location.hostname}/gp/product/${asin}/`;
 
                         if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
+                            var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
+
+                            chrome.runtime.sendMessage({
+                                action: "appendBasketContent",
+                                source: rowStr
+                            });
+
                             getProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
                             console.log(`${asin} not found in local cache, adding now`);
                         }
-
-                        var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
-                        //var basketC =  `<table><tr><td colspan='4'>Found ${count} items:</td></tr> ${strItems}<tr><td colspan='4'></td>${postalCode}</tr></table>`;
-
-                        chrome.runtime.sendMessage({
-                            action: "appendBasketContent",
-                            source: rowStr
-                        });
 
                         adjustCache(itemArray);
                     }

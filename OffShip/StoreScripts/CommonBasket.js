@@ -85,19 +85,17 @@ function adjustCache(itemArray) {
 
 }
 
-function updateFullProductInLocalCache(asin, description, link, imgSrc, price, itemWeight, dimentions) {
-
-    var updateProduct = { id: asin, itemDesc: description, link: link, imgSrc: imgSrc, price: price, weight: itemWeight, dimentions: dimentions };
-    var strProduct = JSON.stringify(updateProduct);
+function updateFullProductInLocalCache(item) {
+    var strProduct = JSON.stringify(item);
 
     //Update in local-local cache as well
-    storageCache[asin] = strProduct;
+    storageCache[item.asin] = strProduct;
 
     var storage = chrome.storage.local;
     var obj = {};
-    obj[asin] = strProduct;
+    obj[item.asin] = strProduct;
     storage.set(obj);
-    console.log('Updated product with id:' + asin);
+    console.log('Updated product with id:' + item.asin);
 }
 
 function localCacheTest(asin, value) {
@@ -134,7 +132,7 @@ function localCacheReadTest(asin) {
 
 function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
     try {
-        var itemName = itemDesc.length > 30 ? itemDesc.substr(0, 27) + "..." : itemDesc;
+        var itemName = itemDesc.length > 40 ? itemDesc.substr(0, 37) + "..." : itemDesc;
         var itemLink = `<a href='https://${window.location.hostname}/gp/product/${asin}/' alt='${itemName}'/>${itemName}</a>`;
 
         const lang = navigator.language;
@@ -146,8 +144,9 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
         //strPrice = parseFloat(price).toFixed(2).toLocaleString();
 
         var strImg = "<img src='" + itemImgSrc + "' alt='" + itemDesc + "' width='64' item-id='" + itemid + "'>";
+        var removeImg = "<img src='/images/minus.png' alt='Remove from offset calculations' width='16px'>";
         //var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href='#' class="myOffsetButtonLink" product-id="${asin}">Purchase Offset</a></td>`;
-        var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>$${strPrice}</td>`;
+        var strRow = `<td>${strImg}</td><td class='w3-cell-top'>${itemLink}</td><td class='w3-cell-top'>$${strPrice}</td><td class='w3-cell-top'>${removeImg}</td>`;
     }
     catch (err) {
         console.log(err.message);

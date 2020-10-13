@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+﻿ <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
     <title>OffShip Extenstion</title>
+    <script src="StoreScripts/CommonBasket.js"></script>
     <script src="popup.js"></script>
     <link rel="stylesheet" href="background.css">
     <link rel="stylesheet" href="w3.css">
@@ -14,12 +15,12 @@
             <h4 style="float:right; margin-left:4px; margin-top: auto; vertical-align: text-top">OffShip - Carbon Credits</h4>
         </div>
         <div style="clear: left; float: left;">
-            <span>Purchase carbon offset credits for your online shopping habbits</span>
+            <span>Purchase carbon offset credits for your online shopping habits</span>
         </div>
-        <div id='basketClone' style="width:100%; overflow-y: auto; height:65%; ">
+        <div id="basketClone" style="width:100%; overflow-y: auto; height:65%; ">
             <table id="tblBasketClone"></table>
         </div>
-        <div id='message'>        </div>
+        <div id="message" style="width:100%; overflow-y: auto;"></div>
         <div id="actionDiv" class="w3-display-bottomright w3-padding-large">
             <button id="btnShowCache" type="button" value="Show Cache">Show Cache</button>
             <button id="btnClearCache" type="button" value="Clear Cache">Clear</button>

@@ -1,7 +1,7 @@
 function ReadDOMForBestBuyBasket(document_root) {
 
     var count = 0;
-    var list = document_root.getElementsByClassName("container_2xSNh");    
+    var list = document_root.getElementsByClassName("container_2xSNh");
 
     var itemArray = [];
     var innerList = [];
@@ -19,7 +19,7 @@ function ReadDOMForBestBuyBasket(document_root) {
 
                 var linkTag = innerList[0].href;
                 var lastIndex = linkTag.lastIndexOf("/");
-                var itemid = linkTag.substring(lastIndex, linkTag.length);
+                var itemid = linkTag.substring(lastIndex+1);
                 var asin = itemid;
 
                 var itemImgSrc = "";
@@ -32,10 +32,12 @@ function ReadDOMForBestBuyBasket(document_root) {
 
                 var price = 0;
 
-                priceList = list[i].getElementsByClassName("loadedContent_e3Dc0");                
+                //price_FHDfG
+                //priceList = list[i].getElementsByClassName("loadedContent_e3Dc0");
+                priceList = list[i].getElementsByClassName("price_FHDfG");
 
                 if (typeof priceList !== 'undefined' && priceList.length > 0) {
-                    price = priceList[0].innerHTML;
+                    price = priceList[0].innerText;
 
                     if (price.startsWith("$"))
                         price = price.substring(1, price.length);
@@ -51,16 +53,16 @@ function ReadDOMForBestBuyBasket(document_root) {
                 var link = `https://${window.location.hostname}${linkTag}/`;
 
                 if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
+                    var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
+
+                    chrome.runtime.sendMessage({
+                        action: "appendBasketContent",
+                        source: rowStr
+                    });
+
                     getBestBuyProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
                     console.log(`${asin} not found in local cache, adding now`);
                 }
-
-                var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
-                
-                chrome.runtime.sendMessage({
-                    action: "appendBasketContent",
-                    source: rowStr
-                });
 
                 adjustCache(itemArray);
             }
@@ -94,7 +96,8 @@ function getBestBuyProductDetailsAndStore(asin, description, link, imgSrc, price
         dimentions = "42mmx36mm";
     }
 
-    updateFullProductInLocalCache(asin, description, link, imgSrc, price, weight, dimentions);
+    var item = { store: "BestBuy", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions };
+    updateFullProductInLocalCache(item);
 }
 
 chrome.storage.local.get(null, function (data) {

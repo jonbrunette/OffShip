@@ -44,16 +44,16 @@ function ReadDOMForAppleBasket(document_root) {
                 var link = `https://${window.location.hostname}${linkTag}/`;
 
                 if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
+                    var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
+
+                    chrome.runtime.sendMessage({
+                        action: "appendBasketContent",
+                        source: rowStr
+                    });
+
                     getAppleProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
                     console.log(`${asin} not found in local cache, adding now`);
                 }
-
-                var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
-                
-                chrome.runtime.sendMessage({
-                    action: "appendBasketContent",
-                    source: rowStr
-                });
 
                 adjustCache(itemArray);
             }
@@ -63,8 +63,6 @@ function ReadDOMForAppleBasket(document_root) {
                 sendError(window.location.href, innerErr.message, "Error in getting product details");
                 return "Error in getting product details: " + innerErr.message;
             }
-
-
         }
     }
     catch (err) {
@@ -89,7 +87,8 @@ function getAppleProductDetailsAndStore(asin, description, link, imgSrc, price) 
         dimentions = "42mmx36mm";
     }
 
-    updateFullProductInLocalCache(asin, description, link, imgSrc, price, weight, dimentions);
+    var item = { store: "Apple", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions };
+    updateFullProductInLocalCache(item);
 }
 
 chrome.storage.local.get(null, function (data) {
