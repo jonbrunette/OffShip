@@ -78,14 +78,17 @@ function clearLocalStorage() {
 function openCreditPage() {
     var asin = "blah";
     var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`;
-    //chrome.tabs.create({ url: newURL });
-    //window.open(`chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`);
-    //window.open(`buyoffset.html?productId=${asin}`);
     window.open(newURL);
+}
 
-    //chrome.tabs.create({ 'url': chrome.extension.getURL(newURL) }, function (tab) {
-    //    // Tab opened.
-    //});
+function removeItem() {
+    var id = event.target.getAttribute("item-id");
+    removeProductInLocalCache(id);
+    var row = document.getElementById("tr" + id);
+
+    //TODO: Remove completely not just hide
+    if (typeof row !== 'undefined')
+        row.style.display = "none";
 }
 
 function onWindowLoad() {
@@ -94,11 +97,7 @@ function onWindowLoad() {
     var basketClone = document.querySelector('#basketClone');
 
     document.getElementById('btnShowCreditOptions').addEventListener('click', openCreditPage);
-    document.getElementById('btnClearCache').addEventListener('click', clearLocalStorage);
-    document.getElementById('btnShowCache').addEventListener('click', printLocalStorage);
     //document.getElementById('btnShowPageContent').addEventListener('click', printPageContent);
-    document.getElementById("btnClearCache").style.display = "none";
-    document.getElementById("btnShowCache").style.display = "none";
     //document.getElementById("actionDiv").style.display = "none";
     document.getElementById("btnShowPageContent").style.display = "none";
 
@@ -153,6 +152,18 @@ function onWindowLoad() {
     loadSummaryFromCache();
 }
 
+function addRemoveItemClickHandlers() {
+
+    var buttonList = document.getElementsByClassName("removeButton");
+
+    if (buttonList === 'undefined' || buttonList.length == 0)
+        return;
+
+    for (var i = 0; i < buttonList.length; i++) {
+        buttonList[i].addEventListener('click', removeItem);
+    }
+}
+
 function loadSummaryFromCache() {
     chrome.storage.local.get(null, function (data) {
 
@@ -179,6 +190,7 @@ function loadSummaryFromCache() {
                     
                     var tbl = document.getElementById("tblBasketClone");
                     row = tbl.insertRow(tbl.rows.length);
+                    row.id = "tr" + product.asin;
                     row.innerHTML = rowStr;
                 }
                 else
@@ -188,6 +200,9 @@ function loadSummaryFromCache() {
                 console.error("Error in loading products: " + err);
             }
         }
+
+        addRemoveItemClickHandlers();
+
     });
 }
 

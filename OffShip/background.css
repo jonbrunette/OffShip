@@ -31,3 +31,7 @@ body {
     text-align: right;
     margin-left: 100px
 }
+
+.removeButton {
+    cursor: pointer;
+}

@@ -57,7 +57,6 @@ function updateProductInLocalCache(asin, itemWeight, dimentions) {
     });
 }
 
-
 function removeProductInLocalCache(asin) {
 
     //Update in local-local cache as well
@@ -144,7 +143,7 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
         //strPrice = parseFloat(price).toFixed(2).toLocaleString();
 
         var strImg = "<img src='" + itemImgSrc + "' alt='" + itemDesc + "' width='64' item-id='" + itemid + "'>";
-        var removeImg = "<img src='/images/minus.png' alt='Remove from offset calculations' width='16px'>";
+        var removeImg = "<img src='/images/minus.png' alt='Remove from offset calculations' width='16px' class='removeButton' item-id='" + itemid + "'>";
         //var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href='#' class="myOffsetButtonLink" product-id="${asin}">Purchase Offset</a></td>`;
         var strRow = `<td>${strImg}</td><td class='w3-cell-top'>${itemLink}</td><td class='w3-cell-top'>$${strPrice}</td><td class='w3-cell-top'>${removeImg}</td>`;
     }

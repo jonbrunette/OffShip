@@ -32,7 +32,7 @@
   <ItemGroup>
     <Content Include="Debug.html" />
     <Content Include="buyoffset.js" />
-    <Content Include="CommonBasket.js">
+    <Content Include="StoreScripts\CommonBasket.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="content.js">
@@ -44,11 +44,11 @@
     <Content Include="background.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="getBestBuyBasketContent.js" />
-    <Content Include="getAppleBasketContent.js">
+    <Content Include="StoreScripts\getBestBuyBasketContent.js" />
+    <Content Include="StoreScripts\getAppleBasketContent.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="getBasketContent.js" />
+    <Content Include="StoreScripts\getBasketContent.js" />
     <Content Include="getPagesSource.js">
       <SubType>Code</SubType>
     </Content>
@@ -72,6 +72,9 @@
     <None Include="SampleWebPages\SampleBestBuyCartPage.html">
       <SubType>Code</SubType>
     </None>
+    <None Include="SampleWebPages\SampleBestBuyCartPage2.html">
+      <SubType>Code</SubType>
+    </None>
     <Content Include="w3.css" />
     <None Include="SampleWebPages\SampleAmazonProductPage.html">
       <SubType>Code</SubType>
@@ -83,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="images\" />
+    <Folder Include="StoreScripts\" />
     <Folder Include="SampleWebPages\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
