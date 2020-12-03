@@ -214,7 +214,7 @@ function extractBestBuyProductData(doc) {
     var price = document.getElementsByClassName("screenReaderOnly_3anTj")[0].innerText;
 
     if (price.startsWith("$"))
-        price = price.substring(1, price.length);
+        price = parseFloat(price.substring(1, price.length)).toFixed(2);
 
     var item = { store: "BestBuy", asin: sku, description: document.title, link: window.location.href, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions };
     updateFullProductInLocalCache(item);

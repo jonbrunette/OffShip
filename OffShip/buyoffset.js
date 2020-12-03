@@ -37,7 +37,7 @@ function onWindowLoad() {
             }
         }
 
-        weightInKg = (totalWeight / 1000);
+        weightInKg = (totalWeight / 1000).toFixed(3);
 
         document.getElementById("numberItemsSpan").innerText = count;
         document.getElementById("totalWeightSpan").innerText = weightInKg + " kg";
