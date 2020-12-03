@@ -32,7 +32,6 @@ function ReadDOMForBestBuyBasket(document_root) {
 
                 var price = 0;
 
-                //price_FHDfG
                 //priceList = list[i].getElementsByClassName("loadedContent_e3Dc0");
                 priceList = list[i].getElementsByClassName("price_FHDfG");
 
@@ -50,8 +49,6 @@ function ReadDOMForBestBuyBasket(document_root) {
 
                 itemArray.push(asin);
 
-                var link = `https://${window.location.hostname}${linkTag}/`;
-
                 if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
                     var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
 
@@ -59,9 +56,8 @@ function ReadDOMForBestBuyBasket(document_root) {
                         action: "appendBasketContent",
                         source: rowStr
                     });
-
-                    getBestBuyProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
-                    console.log(`${asin} not found in local cache, adding now`);
+                    
+                    console.log(`${asin} not found in local cache, find it somehow...`);
                 }
 
                 adjustCache(itemArray);
@@ -82,22 +78,50 @@ function ReadDOMForBestBuyBasket(document_root) {
     }
 }
 
-function getBestBuyProductDetailsAndStore(asin, description, link, imgSrc, price) {
+function extractBestBuyProductData(pageStr) {
 
     var weight = 0;
-    var dimentions = 0;
+    var height = "";
+    var width = "";
+    var dimentions = "";
+ 
+    //if (typeof table === 'undefined') {
+    var techDetailsStart = pageStr.indexOf('<div class="productInfoContainer_2mCHp tabItemContainer_EeznO isActive_2cc9n" id="detailsAndSpecs">');
+    var techDetailsEnd = pageStr.indexOf('<div><h3 class="groupName_2dvlp">Warranty</h3></div>', techDetailsStart);
 
-    if (description.toLowerCase().includes("ipad")) {
-        weight = "531g";
-        dimentions = "280.6mmx247.6 mm";
+    var detailsStr = pageStr.substr(techDetailsStart, techDetailsEnd - techDetailsStart + "</div></div>".length);
+    var detailsDiv = createElementFromHTML(detailsStr);
+
+    //Class->class->class
+    //itemContainer_20kXj -> itemName_37zd4 -> itemValue_XPfaq
+    var containers = detailsDiv.getElementsByClassName("itemContainer_20kXj");
+
+    try {
+        containers.forEach(row => {
+            title = row.getElementsByClassName("itemName_37zd4")[0].innerHTML;
+            value = row.getElementsByClassName("itemValue_XPfaq")[0].innerHTML;
+
+            //TODO: Language 
+            if(title == "Weight")
+                weight = value;
+
+            if (title == "Height")
+                height = value;
+
+            if (title == "Width")
+                width = value;
+        });
+
+        dimentions = width + "x" + height;
     }
-    else if (description.toLowerCase().includes("watch")) {
-        weight = "33g";
-        dimentions = "42mmx36mm";
+    catch (err) {
+        console.log(err.message);
+        appendMessage(err.message);
+        sendError(window.location.href, err.message, "Error in extractBestBuyProductData");
+        return err.message;
     }
 
-    var item = { store: "BestBuy", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions };
-    updateFullProductInLocalCache(item);
+    return { weight: weight, dimentions: dimentions };
 }
 
 chrome.storage.local.get(null, function (data) {

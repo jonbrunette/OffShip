@@ -75,8 +75,8 @@ var getDistanceBetweenPoints = function (p1, p2) {
 };
 
 function findDistance() {
-    var locationapikey = "<place your key here>";
-    
+    //var locationapikey = "<place your key here>";
+    var locationapikey = "74ab02290cc6ff718f502b057c9e5382";
     var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
     var xhr = new XMLHttpRequest();
@@ -226,6 +226,14 @@ function normalizeWeight(weightStr) {
     if (index > -1) {
         weightStr = weightStr.substr(0, index).trim();
         weight = parseFloat(weightStr) * 1000;
+        return weight;
+    }
+
+    index = weightStr.indexOf("Grams");
+
+    if (index > -1) {
+        weightStr = weightStr.substr(0, index).trim();
+        weight = parseFloat(weightStr);
         return weight;
     }
 

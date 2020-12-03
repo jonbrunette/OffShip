@@ -32,6 +32,12 @@
   <ItemGroup>
     <Content Include="Debug.html" />
     <Content Include="buyoffset.js" />
+    <None Include="SampleWebPages\SampleBestBuyProduct.html">
+      <SubType>Code</SubType>
+    </None>
+    <Content Include="Ideas.md">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="StoreScripts\CommonBasket.js">
       <SubType>Code</SubType>
     </Content>
@@ -44,6 +50,7 @@
     <Content Include="background.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="StoreScripts\getBestBuyItemDetails.js" />
     <Content Include="StoreScripts\getBestBuyBasketContent.js" />
     <Content Include="StoreScripts\getAppleBasketContent.js">
       <SubType>Code</SubType>

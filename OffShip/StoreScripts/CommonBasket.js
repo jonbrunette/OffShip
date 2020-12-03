@@ -24,6 +24,7 @@ function appendMessage(message) {
 function sendError(page, error, hint) {
     //also send date, version of extension
     //throttle client side for repeat errors. Don't want to spam 
+    console.log(`Error found on ${page} Error: ${error}`);
 }
 
 function storeProductInLocalCache(asin, itemDesc, itemImgSrc, price, productLink) {

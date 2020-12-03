@@ -112,8 +112,19 @@ function extractProductDataFromTable(table) {
             }
 
             if (col.innerText.trim() == "Product Dimensions") {
+
+                var dim = row.cells[j + 1].innerText.trim();
+
+                if (dim.includes(";")) {
+                    dimentions = dim.split(";")[0];
+                    weight = dim.split(";")[1]
+                    foundWeight = true;
+                }
+                else {
+                    dimentions = dim;
+                }
+
                 foundDimentions = true;
-                dimentions = row.cells[j + 1].innerText.trim();
             }
 
             //todo: amazon.co.uk not same format
