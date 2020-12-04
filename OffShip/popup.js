@@ -183,7 +183,12 @@ function loadSummaryFromCache() {
 
                 var product = JSON.parse(data[k]);
 
-                if (typeof product !== 'undefined') {
+                if (typeof product === 'undefined') {
+                    sendError(this, data[k], "Could not parse product");
+                    continue;
+                }
+
+                if(product.inCart == "y") {
                     count++;
 
                     var rowStr = formatItemRow(product.asin, product.asin, product.description, product.imgSrc, product.price);
@@ -193,8 +198,6 @@ function loadSummaryFromCache() {
                     row.id = "tr" + product.asin;
                     row.innerHTML = rowStr;
                 }
-                else
-                    message.innerHTML += "product is undefined";
             }
             catch (err) {
                 console.error("Error in loading products: " + err);

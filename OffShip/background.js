@@ -1,4 +1,4 @@
-//import { title } from "process";
+var currentUrl = "";
 
 window.onload = function () {
     console.log("Page load: " + window.location.href);
@@ -18,6 +18,16 @@ window.onload = function () {
     AddActionLinksToPage(document);
     getPostalCode();
     runScrapperForSelectSites();
+
+    currentUrl = window.location.href;
+    setInterval(checkLocationChanged, 20000); //check every 20s
+}
+
+function checkLocationChanged() {
+    if (currentUrl != window.location.href) {
+        currentUrl = window.location.href;
+        runScrapperForSelectSites();
+    }
 }
 
 function getPostalCode() {
@@ -87,7 +97,7 @@ function addActionLink(actionListDiv, asin) {
     var inputBtn = document.createElement("input");    
     inputBtn.setAttribute("class", "a-declarative offsetButtonLink");
     inputBtn.setAttribute("type", "button");
-    inputBtn.setAttribute("value", "Buy carbon offset for the planet");    
+    inputBtn.setAttribute("value", "Buy carbon offset for the planet");
     inputBtn.setAttribute("product-id", asin);
     inputBtn.addEventListener('click', openCarbonOffset);
 
@@ -158,9 +168,17 @@ function extractBestBuyProductData(doc) {
     var width = "";
     var dimentions = "";
 
+    //Is this a product page?
+    var sku = document.getElementById("sku");
+
+    if (typeof sku === 'undefined' || sku == null) {
+        console.log("Not a product page, exiting.");
+        return;
+    }
+
     var detailsDivs = doc.getElementsByClassName('productInfoContainer_2mCHp');
 
-    if (typeof detailsDivs === 'undefined') {
+    if (typeof detailsDivs === 'undefined' || detailsDivs.length == 0) {
         //TODO: Implement sendError not available in this scope
         //sendError(window.location.href, err.message, "Error in extractBestBuyProductData");
         console.log("Error in extractBestBuyProductData");
@@ -208,15 +226,14 @@ function extractBestBuyProductData(doc) {
         return err.message;
     }
 
-    //var sku = getSku(document);
-    var sku = document.getElementById("sku").value;
+    sku = document.getElementById("sku").value;
     var imgSrc = getImage(document);
     var price = document.getElementsByClassName("screenReaderOnly_3anTj")[0].innerText;
 
     if (price.startsWith("$"))
         price = parseFloat(price.substring(1, price.length)).toFixed(2);
 
-    var item = { store: "BestBuy", asin: sku, description: document.title, link: window.location.href, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions };
+    var item = { store: "BestBuy", asin: sku, description: document.title, link: window.location.href, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions, inCart: "n"};
     updateFullProductInLocalCache(item);
 
     return { weight: weight, dimentions: dimentions };

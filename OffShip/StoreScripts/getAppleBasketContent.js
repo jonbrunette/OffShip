@@ -87,7 +87,7 @@ function getAppleProductDetailsAndStore(asin, description, link, imgSrc, price) 
         dimentions = "42mmx36mm";
     }
 
-    var item = { store: "Apple", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions };
+    var item = { store: "Apple", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions, inCart: "y" };
     updateFullProductInLocalCache(item);
 }
 

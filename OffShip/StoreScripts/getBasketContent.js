@@ -176,7 +176,7 @@ function getProductDetailsAndStore(asin, description, link, imgSrc, price) {
 
             //appendMessage("Inner ASIN: " + asin + ", " + price + ", " + productData.dimentions);
             //appendMessage(resp);
-            var item = { store: "Amazon", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: productData.weight, dimentions: productData.dimentions };
+            var item = { store: "Amazon", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: productData.weight, dimentions: productData.dimentions, inCart: "y" };
             updateFullProductInLocalCache(item);
         }
     }

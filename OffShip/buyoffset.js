@@ -25,6 +25,9 @@ function onWindowLoad() {
 
                 var product = JSON.parse(data[k]);
 
+                if (product.inCart == "n")
+                    continue;
+
                 if (typeof product !== 'undefined' && typeof product.asin !== 'undefined') {
                     count++;
 
@@ -124,8 +127,8 @@ function findDistance() {
 //}
 
 function findAndShowLocation() {
-    var locationapikey = "74ab02290cc6ff718f502b057c9e5382";
-    //var locationapikey = "<place your key here>";
+    
+    var locationapikey = "<place your key here>";
     var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
     var xhr = new XMLHttpRequest();
@@ -247,18 +250,29 @@ function normalizeWeight(weightStr) {
 
     //imperial
     index = weightStr.indexOf("pounds");
+    if (index > -1) return convertPoundsToGrams(weightStr, index);
 
-    if (index > -1) {
-        weightStr = weightStr.substr(0, index).trim();
-        weight = parseFloat(weightStr) * 453.592;
-        return weight;
-    }
+    index = weightStr.indexOf("lbs");
+    if (index > -1) return convertPoundsToGrams(weightStr, index);
+
+    index = weightStr.indexOf("lb"); 
+    if (index > -1) return convertPoundsToGrams(weightStr, index);
 
     index = weightStr.indexOf("ounces");
 
     if (index > -1) {
         weightStr = weightStr.substr(0, index).trim();
         weight = parseFloat(weightStr) * 28.35;
+        return weight;
+    }
+
+    sendError("buyoffset.html", weightStr, "Could not normalize weight");
+}
+
+function convertPoundsToGrams(weightStr, index) {
+    if (index > -1) {
+        weightStr = weightStr.substr(0, index).trim();
+        weight = parseFloat(weightStr) * 453.592;
         return weight;
     }
 }

@@ -58,6 +58,20 @@ function updateProductInLocalCache(asin, itemWeight, dimentions) {
     });
 }
 
+function markItemInCart(asin) {
+    chrome.storage.local.get([asin], function (value) {
+        var product = JSON.parse(value[asin]);
+        product.inCart = "y";
+        var strProduct = JSON.stringify(product);
+
+        var storage = chrome.storage.local;
+        var obj = {};
+        obj[asin] = strProduct;
+        storage.set(obj);
+        console.log('Updated product with id:' + asin);
+    });
+}
+
 function removeProductInLocalCache(asin) {
 
     //Update in local-local cache as well
