@@ -152,10 +152,11 @@ function localCacheReadTest(asin) {
     });
 }
 
-function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
+//function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
+function formatItemRow(product) {
     try {
-        var itemName = itemDesc.length > 40 ? itemDesc.substr(0, 37) + "..." : itemDesc;
-        var itemLink = `<a href='https://${window.location.hostname}/gp/product/${asin}/' alt='${itemName}'/>${itemName}</a>`;
+        var itemName = product.description.length > 40 ? product.description.substr(0, 37) + "..." : product.description;
+        var itemLink = `<a href='${product.link}' alt='${itemName}'/>${itemName}</a>`;
 
         const lang = navigator.language;
 
@@ -164,12 +165,11 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
 
         //TODO: Make (-) button stay in right column regardless of item description. 
 
-        strPrice = price;
+        strPrice = product.price;
         //strPrice = parseFloat(price).toFixed(2).toLocaleString();
 
-        var strImg = "<img src='" + itemImgSrc + "' alt='" + itemDesc + "' width='64' item-id='" + itemid + "'>";
-        var removeImg = "<img src='/images/minus.png' alt='Remove from offset calculations' width='16px' class='removeButton' item-id='" + itemid + "'>";
-        //var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href='#' class="myOffsetButtonLink" product-id="${asin}">Purchase Offset</a></td>`;
+        var strImg = `<img src='${product.imgSrc}' alt='${product.description}' width='64' item-id='${product.id}'>`;
+        var removeImg = "<img src='/images/minus.png' alt='Remove from offset calculations' width='16px' class='removeButton' item-id='" + product.id + "'>";
         var strRow = `<td>${strImg}</td><td class='w3-cell-top'>${itemLink}</td><td class='w3-cell-top'>$${strPrice}</td><td class='w3-cell-top'>${removeImg}</td>`;
     }
     catch (err) {
@@ -182,7 +182,7 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
 
 function formatItemRowFromProduct(itemid, product) {
 
-    var itemName = product.itemDesc;
+    var itemName = product.description;
     itemName = itemName.length > 30 ? itemName.substr(0, 27) + "..." : itemName;
     var itemLink = `<a href='https://${window.location.hostname}/gp/product/${product.id}/' alt='${itemName}'/>${itemName}</a>`;
 

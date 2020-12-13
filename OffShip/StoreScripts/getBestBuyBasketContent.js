@@ -49,7 +49,8 @@ function ReadDOMForBestBuyBasket(document_root) {
                 itemArray.push(asin);
 
                 if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
-                    var rowStr = formatItemRow(itemid, asin, itemDesc, itemImgSrc, price);
+                    var product = { id: asin, description: itemDesc, link: linkTag, imgSrc: itemImgSrc, price: price, inCart: "y" };
+                    var rowStr = formatItemRow(product);
 
                     chrome.runtime.sendMessage({
                         action: "appendBasketContent",

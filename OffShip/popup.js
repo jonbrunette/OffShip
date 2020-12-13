@@ -191,7 +191,7 @@ function loadSummaryFromCache() {
                 if(product.inCart == "y") {
                     count++;
 
-                    var rowStr = formatItemRow(product.asin, product.asin, product.description, product.imgSrc, product.price);
+                    var rowStr = formatItemRow(product);
                     
                     var tbl = document.getElementById("tblBasketClone");
                     row = tbl.insertRow(tbl.rows.length);
