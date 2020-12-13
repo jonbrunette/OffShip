@@ -91,6 +91,18 @@ function removeItem() {
         row.style.display = "none";
 }
 
+function gotoItem() {
+    var productUrl = event.target.getAttribute("href");
+    //removeProductInLocalCache(id);
+    //var row = document.getElementById("tr" + id);
+
+    ////TODO: Remove completely not just hide
+    //if (typeof row !== 'undefined')
+    //    row.style.display = "none";
+
+    window.open(productUrl);
+}
+
 function onWindowLoad() {
 
     var message = document.querySelector('#message');
@@ -164,6 +176,18 @@ function addRemoveItemClickHandlers() {
     }
 }
 
+function addItemLinkClickHandlers() {
+
+    var buttonList = document.getElementsByClassName("itemLink");
+
+    if (buttonList === 'undefined' || buttonList.length == 0)
+        return;
+
+    for (var i = 0; i < buttonList.length; i++) {
+        buttonList[i].addEventListener('click', gotoItem);
+    }
+}
+
 function loadSummaryFromCache() {
     chrome.storage.local.get(null, function (data) {
 
@@ -205,7 +229,7 @@ function loadSummaryFromCache() {
         }
 
         addRemoveItemClickHandlers();
-
+        addItemLinkClickHandlers();
     });
 }
 

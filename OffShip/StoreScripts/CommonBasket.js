@@ -156,7 +156,7 @@ function localCacheReadTest(asin) {
 function formatItemRow(product) {
     try {
         var itemName = product.description.length > 40 ? product.description.substr(0, 37) + "..." : product.description;
-        var itemLink = `<a href='${product.link}' alt='${itemName}'/>${itemName}</a>`;
+        var itemLink = `<a href='${product.link}' alt='${itemName}' class='itemLink' />${itemName}</a>`;
 
         const lang = navigator.language;
 
