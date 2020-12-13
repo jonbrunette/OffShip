@@ -24,7 +24,15 @@ function appendMessage(message) {
 function sendError(page, error, hint) {
     //also send date, version of extension
     //throttle client side for repeat errors. Don't want to spam 
-    console.log(`Error found on ${page} Error: ${error}`);
+    console.log(`Error found on ${page} Error: ${error} Hint: ${hint}`);
+    appendMessage(error);
+}
+
+function normalizePrice(price) {
+    if (price.startsWith("$"))
+        price = parseFloat(price.substring(1, price.length)).toFixed(2);
+
+    return price;
 }
 
 function storeProductInLocalCache(asin, itemDesc, itemImgSrc, price, productLink) {
@@ -153,6 +161,8 @@ function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
 
         //TODO: Fix
         //strPrice = (price).toLocaleString(lang, { style: 'currency', currency: 'EUR' }); //EUR
+
+        //TODO: Make (-) button stay in right column regardless of item description. 
 
         strPrice = price;
         //strPrice = parseFloat(price).toFixed(2).toLocaleString();

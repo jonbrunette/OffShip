@@ -50,7 +50,6 @@
     <Content Include="background.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="StoreScripts\getBestBuyItemDetails.js" />
     <Content Include="StoreScripts\getBestBuyBasketContent.js" />
     <Content Include="StoreScripts\getAppleBasketContent.js">
       <SubType>Code</SubType>

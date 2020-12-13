@@ -120,7 +120,7 @@ function onWindowLoad() {
     });
 
     chrome.tabs.executeScript(null, {
-        file: "StoreScripts/getBasketContent.js"
+        file: "StoreScripts/getAmazonBasketContent.js"
     }, function () {
         // If you try and inject into an extensions page or the webstore/NTP you'll get an error
             if (chrome.runtime.lastError) {

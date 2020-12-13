@@ -15,6 +15,7 @@ function onWindowLoad() {
         var count = 0;
         var str = "";
         var totalWeight = 0;
+        var totalUnweighted = 0;
 
         for (var k in data) {
             str += "<p>Found [" + k + "," + data[k] + "]</p>";
@@ -30,6 +31,11 @@ function onWindowLoad() {
 
                 if (typeof product !== 'undefined' && typeof product.asin !== 'undefined') {
                     count++;
+
+                    if (typeof product.weight === 'undefined') {
+                        totalUnweighted++;
+                        continue;
+                    }
 
                     var normalizedWeight = normalizeWeight(product.weight);
                     totalWeight += normalizedWeight;
@@ -127,8 +133,8 @@ function findDistance() {
 //}
 
 function findAndShowLocation() {
-    
-    var locationapikey = "<place your key here>";
+    var locationapikey = "74ab02290cc6ff718f502b057c9e5382";
+    //var locationapikey = "<place your key here>";
     var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
     var xhr = new XMLHttpRequest();
@@ -232,7 +238,7 @@ function normalizeWeight(weightStr) {
         return weight;
     }
 
-    index = weightStr.indexOf("Grams");
+    index = weightStr.indexOf("grams");
 
     if (index > -1) {
         weightStr = weightStr.substr(0, index).trim();

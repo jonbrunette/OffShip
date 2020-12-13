@@ -86,6 +86,54 @@ function getAppleProductDetailsAndStore(asin, description, link, imgSrc, price) 
         weight = "33g";
         dimentions = "42mmx36mm";
     }
+    else if (description.toLowerCase().includes("macbook air")) {
+        weight = "1.29kg";
+        dimentions = "30.41cmx1.61cmx21.24cm";
+    }
+    else if (description.toLowerCase().includes("13-inch macbook pro")) {
+        weight = "1.4kg";
+        dimentions = "30.41cmx1.56cmx21.24cm";
+    }
+    else if (description.toLowerCase().includes("16-inch macbook pro")) {
+        weight = "2kg";
+        dimentions = "35.79cmx1.62cmx24.59cm";
+    }
+    else if (description.toLowerCase().includes("imac pro")) {
+        weight = "9.7kg";
+        dimentions = "65.0cmx51.6cmx20.3cm";
+    }
+    else if (description.toLowerCase().includes("imac")) {
+        weight = "5.44kg";
+        dimentions = "52.8cmx45.0cmx17.5cm";
+    }
+    else if (description.toLowerCase().includes("mac pro")) {
+        weight = "18.0kg";
+        dimentions = "21.8cmx45.0cmx52.9cm";
+    }
+    else if (description.toLowerCase().includes("mac mini")) {
+        weight = "1.2kg";
+        dimentions = "3.6cmx19.7cmx19.7cm";
+    }
+    else if (description.toLowerCase().includes("iphone 12")) {
+        weight = "200g";
+        dimentions = "150mmx75mmx7.4mm";
+    }
+    else if (description.toLowerCase().includes("airpods pro")) {
+        weight = "5.4g";
+        dimentions = "30.9mmx21.8mmx24.0mm";
+    }
+    else if (description.toLowerCase().includes("airpods 2nd")) {
+        weight = "4g";
+        dimentions = "40.5mmx16.5mmx18.0mm";
+    }
+    else if (description.toLowerCase().includes("apple tv")) {
+        weight = "425g";
+        dimentions = "35mmx98mmx98mm";
+    }
+    else if (description.toLowerCase().includes("apple tv hd")) {
+        weight = "425g";
+        dimentions = "35mmx98mmx98mm";
+    }
 
     var item = { store: "Apple", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions, inCart: "y" };
     updateFullProductInLocalCache(item);

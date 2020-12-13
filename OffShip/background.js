@@ -1,7 +1,7 @@
 var currentUrl = "";
 
 window.onload = function () {
-    console.log("Page load: " + window.location.href);
+    console.log("Background Page load: " + window.location.href);
 
     chrome.storage.onChanged.addListener(function (changes, namespace) {
         for (var key in changes) {
@@ -20,7 +20,7 @@ window.onload = function () {
     runScrapperForSelectSites();
 
     currentUrl = window.location.href;
-    setInterval(checkLocationChanged, 20000); //check every 20s
+    setInterval(checkLocationChanged, 15000); //check every 15s
 }
 
 function checkLocationChanged() {
@@ -229,27 +229,12 @@ function extractBestBuyProductData(doc) {
     sku = document.getElementById("sku").value;
     var imgSrc = getImage(document);
     var price = document.getElementsByClassName("screenReaderOnly_3anTj")[0].innerText;
-
-    if (price.startsWith("$"))
-        price = parseFloat(price.substring(1, price.length)).toFixed(2);
+    price = normalizePrice(price);
 
     var item = { store: "BestBuy", asin: sku, description: document.title, link: window.location.href, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions, inCart: "n"};
     updateFullProductInLocalCache(item);
 
     return { weight: weight, dimentions: dimentions };
-}
-
-function updateFullProductInLocalCache(item) {
-    var strProduct = JSON.stringify(item);
-
-    //Update in local-local cache as well
-    //storageCache[item.asin] = strProduct;
-
-    var storage = chrome.storage.local;
-    var obj = {};
-    obj[item.asin] = strProduct;
-    storage.set(obj);
-    console.log('Updated product with id:' + item.asin);
 }
 
 function getImage(doc) {
