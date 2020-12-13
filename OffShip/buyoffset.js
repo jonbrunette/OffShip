@@ -84,8 +84,8 @@ var getDistanceBetweenPoints = function (p1, p2) {
 };
 
 function findDistance() {
-    //var locationapikey = "<place your key here>";
-    var locationapikey = "74ab02290cc6ff718f502b057c9e5382";
+    var locationapikey = "<place your key here>";
+    
     var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
     var xhr = new XMLHttpRequest();
