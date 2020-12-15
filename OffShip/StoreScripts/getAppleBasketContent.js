@@ -18,7 +18,7 @@ function ReadDOMForAppleBasket(document_root) {
 
                 var itemid = innerList[0].getAttribute("data-s-object-id");
                 var linkTag = innerList[0].getAttribute("data-relatedlink");
-                var asin = itemid;
+                var id = itemid;
 
                 var price = 0;
 
@@ -39,12 +39,12 @@ function ReadDOMForAppleBasket(document_root) {
                 if (typeof innerList !== 'undefined' && innerList.length > 0)
                     itemImgSrc = innerImages[0].getAttribute("src");
 
-                itemArray.push(asin);
+                itemArray.push(id);
 
                 var link = `https://${window.location.hostname}${linkTag}/`;
 
-                if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
-                    var product = { id: asin, description: itemDesc, link: link, imgSrc: itemImgSrc, price: price, inCart: "y" };
+                if (typeof storageCache[id] === 'undefined' || storageCache[id] === "") {
+                    var product = { id: id, description: itemDesc, link: link, imgSrc: itemImgSrc, price: price, inCart: "y" };
                     var rowStr = formatItemRow(product);
 
                     chrome.runtime.sendMessage({
@@ -52,8 +52,8 @@ function ReadDOMForAppleBasket(document_root) {
                         source: rowStr
                     });
 
-                    getAppleProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
-                    console.log(`${asin} not found in local cache, adding now`);
+                    getAppleProductDetailsAndStore(id, itemDesc, link, itemImgSrc, price);
+                    console.log(`${id} not found in local cache, adding now`);
                 }
 
                 adjustCache(itemArray);
@@ -74,7 +74,7 @@ function ReadDOMForAppleBasket(document_root) {
     }
 }
 
-function getAppleProductDetailsAndStore(asin, description, link, imgSrc, price) {
+function getAppleProductDetailsAndStore(id, description, link, imgSrc, price) {
 
     var weight = 0;
     var dimentions = 0;
@@ -136,7 +136,7 @@ function getAppleProductDetailsAndStore(asin, description, link, imgSrc, price) 
         dimentions = "35mmx98mmx98mm";
     }
 
-    var item = { store: "Apple", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions, inCart: "y" };
+    var item = { store: "Apple", id: id, description: description, link: link, imgSrc: imgSrc, price: price, weight: weight, dimentions: dimentions, inCart: "y" };
     updateFullProductInLocalCache(item);
 }
 

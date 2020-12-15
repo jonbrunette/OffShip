@@ -9,7 +9,11 @@
     {
       "matches": [ "<all_urls>" ],
       "css": [ "background.css" ],
-      "js": [ "StoreScripts/CommonBasket.js", "background.js", "StoreScripts/getWalmartBasketContent.js" ]
+      "js": [ "StoreScripts/CommonBasket.js",
+        "background.js",
+        "StoreScripts/getWalmartBasketContent.js",
+        "StoreScripts/getAmazonBasketContent.js"
+      ]
     }
   ],  
   "background": {

@@ -4,6 +4,7 @@ Ideas
 User experience improvements
 ----------------------------
 1. Instead of parsing basket when the user clicks on the entension run in the background
+2. Add number of items in cart as a number on the extension
 
 Performance Improvement
 -----------------------

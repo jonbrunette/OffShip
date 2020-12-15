@@ -35,61 +35,61 @@ function normalizePrice(price) {
     return price;
 }
 
-function storeProductInLocalCache(asin, itemDesc, itemImgSrc, price, productLink) {
+function storeProductInLocalCache(id, itemDesc, itemImgSrc, price, productLink) {
     //TODO: Check if exists in cache first
     //chrome.storage.local.get(['key'], function (result) {
     //    console.log('Value currently is ' + result.key);
     //});
 
-    var product = { id: asin, itemDesc: itemDesc, link: productLink, imgSrc: itemImgSrc, price: price, weight: "", dimentions: "" };
+    var product = { id: id, itemDesc: itemDesc, link: productLink, imgSrc: itemImgSrc, price: price, weight: "", dimentions: "" };
 
     var strProduct = JSON.stringify(product);
 
     var storage = chrome.storage.local;
     var obj = {};
-    obj[asin] = strProduct;
+    obj[id] = strProduct;
     storage.set(obj);
-    console.log('Stored product with id:' + asin);
+    console.log('Stored product with id:' + id);
 }
 
-function updateProductInLocalCache(asin, itemWeight, dimentions) {
-    chrome.storage.local.get([asin], function (value) {
-        var product = JSON.parse(value[asin]);
-        var updateProduct = { id: asin, itemDesc: product.itemDesc, link: product.link, imgSrc: product.imgSrc, price: product.price, weight: itemWeight, dimentions: dimentions };
+function updateProductInLocalCache(id, itemWeight, dimentions) {
+    chrome.storage.local.get([id], function (value) {
+        var product = JSON.parse(value[id]);
+        var updateProduct = { id: id, itemDesc: product.itemDesc, link: product.link, imgSrc: product.imgSrc, price: product.price, weight: itemWeight, dimentions: dimentions };
         var strProduct = JSON.stringify(updateProduct);
 
         var storage = chrome.storage.local;
         var obj = {};
-        obj[asin] = strProduct;
+        obj[id] = strProduct;
         storage.set(obj);
-        console.log('Updated product with id:' + asin);
+        console.log('Updated product with id:' + id);
     });
 }
 
-function markItemInCart(asin) {
-    chrome.storage.local.get([asin], function (value) {
-        var product = JSON.parse(value[asin]);
+function markItemInCart(id) {
+    chrome.storage.local.get([id], function (value) {
+        var product = JSON.parse(value[id]);
         product.inCart = "y";
         var strProduct = JSON.stringify(product);
 
         var storage = chrome.storage.local;
         var obj = {};
-        obj[asin] = strProduct;
+        obj[id] = strProduct;
         storage.set(obj);
-        console.log('Updated product with id:' + asin);
+        console.log('Updated product with id:' + id);
     });
 }
 
-function removeProductInLocalCache(asin) {
+function removeProductInLocalCache(id) {
 
     //Update in local-local cache as well
-    storageCache[asin] = "";
+    storageCache[id] = "";
 
     var storage = chrome.storage.local;
     var obj = {};
-    obj[asin] = "";
+    obj[id] = "";
     storage.set(obj);
-    console.log('Cleared product with id:' + asin);
+    console.log('Cleared product with id:' + id);
 }
 
 function adjustCache(itemArray) {
@@ -111,48 +111,15 @@ function updateFullProductInLocalCache(item) {
     var strProduct = JSON.stringify(item);
 
     //Update in local-local cache as well
-    storageCache[item.asin] = strProduct;
+    storageCache[item.id] = strProduct;
 
     var storage = chrome.storage.local;
     var obj = {};
-    obj[item.asin] = strProduct;
+    obj[item.id] = strProduct;
     storage.set(obj);
-    console.log('Updated product with id:' + item.asin);
+    console.log('Updated product with id:' + item.id);
 }
 
-function localCacheTest(asin, value) {
-
-    var storage = chrome.storage.local;
-    var obj = {};
-    obj[asin] = value;
-    storage.set(obj);
-
-    appendMessage("TEST: Updated xache: " + value);
-
-    chrome.storage.local.get(asin, function (product) {
-
-        appendMessage("TEST: Looking for: " + asin);
-        appendMessage("TEST: Found in cache (raw): " + product[asin]);
-
-        for (var k in product) {
-            appendMessage("TEST: Found [" + k + "," + product[k] + "]");
-        }
-    });
-}
-
-function localCacheReadTest(asin) {
-    chrome.storage.local.get(asin, function (product) {
-
-        appendMessage("TEST: Looking for: " + asin);
-        appendMessage("TEST: Found in cache (raw): " + product[asin]);
-
-        for (var k in product) {
-            appendMessage("TEST: Found [" + k + "," + product[k] + "]");
-        }
-    });
-}
-
-//function formatItemRow(itemid, asin, itemDesc, itemImgSrc, price) {
 function formatItemRow(product) {
     try {
         var itemName = product.description.length > 40 ? product.description.substr(0, 37) + "..." : product.description;

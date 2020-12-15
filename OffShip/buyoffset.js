@@ -29,7 +29,7 @@ function onWindowLoad() {
                 if (product.inCart == "n")
                     continue;
 
-                if (typeof product !== 'undefined' && typeof product.asin !== 'undefined') {
+                if (typeof product !== 'undefined' && typeof product.id !== 'undefined') {
                     count++;
 
                     if (typeof product.weight === 'undefined') {
@@ -85,6 +85,7 @@ var getDistanceBetweenPoints = function (p1, p2) {
 
 function findDistance() {
     var locationapikey = "<place your key here>";
+    
     var url = `http://api.ipstack.com/check?access_key=${locationapikey}`;
 
     var xhr = new XMLHttpRequest();

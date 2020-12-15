@@ -50,16 +50,9 @@ function clearLocalStorage() {
 }
 
 function openCreditPage() {
-    var asin = "blah";
-    var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`;
-    //chrome.tabs.create({ url: newURL });
-    //window.open(`chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`);
-    //window.open(`buyoffset.html?productId=${asin}`);
+    var id = "blah";
+    var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${id}`;
     window.open(newURL);
-
-    //chrome.tabs.create({ 'url': chrome.extension.getURL(newURL) }, function (tab) {
-    //    // Tab opened.
-    //});
 }
 
 function onWindowLoad() {

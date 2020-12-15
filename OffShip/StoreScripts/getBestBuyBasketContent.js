@@ -20,7 +20,7 @@ function ReadDOMForBestBuyBasket(document_root) {
                 var linkTag = innerList[0].href;
                 var lastIndex = linkTag.lastIndexOf("/");
                 var itemid = linkTag.substring(lastIndex+1);
-                var asin = itemid;
+                var id = itemid;
 
                 var itemImgSrc = "";
                 innerImages = list[i].getElementsByTagName("img");
@@ -46,10 +46,10 @@ function ReadDOMForBestBuyBasket(document_root) {
 
                 var itemDesc = innerList[1].innerHTML;
 
-                itemArray.push(asin);
+                itemArray.push(id);
 
-                if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
-                    var product = { id: asin, description: itemDesc, link: linkTag, imgSrc: itemImgSrc, price: price, inCart: "y" };
+                if (typeof storageCache[id] === 'undefined' || storageCache[id] === "") {
+                    var product = { id: id, description: itemDesc, link: linkTag, imgSrc: itemImgSrc, price: price, inCart: "y" };
                     var rowStr = formatItemRow(product);
 
                     chrome.runtime.sendMessage({
@@ -57,11 +57,11 @@ function ReadDOMForBestBuyBasket(document_root) {
                         source: rowStr
                     });
 
-                    console.log(`${asin} not found in local cache, find it somehow...`);
+                    console.log(`${id} not found in local cache, find it somehow...`);
                 }
                 else {
                     //Mark item as in basket
-                    markItemInCart(asin);
+                    markItemInCart(id);
                 }
 
                 adjustCache(itemArray);

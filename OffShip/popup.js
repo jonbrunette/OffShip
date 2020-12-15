@@ -76,8 +76,8 @@ function clearLocalStorage() {
 }
 
 function openCreditPage() {
-    var asin = "blah";
-    var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`;
+    var id = "blah";
+    var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${id}`;
     window.open(newURL);
 }
 
@@ -86,8 +86,10 @@ function removeItem() {
     removeProductInLocalCache(id);
     var row = document.getElementById("tr" + id);
 
+    console.log(`Request to remove: ${id}`);
+
     //TODO: Remove completely not just hide
-    if (typeof row !== 'undefined')
+    if (typeof row !== 'undefined' && row != null)
         row.style.display = "none";
 }
 
@@ -219,7 +221,7 @@ function loadSummaryFromCache() {
                     
                     var tbl = document.getElementById("tblBasketClone");
                     row = tbl.insertRow(tbl.rows.length);
-                    row.id = "tr" + product.asin;
+                    row.id = "tr" + product.id;
                     row.innerHTML = rowStr;
                 }
             }

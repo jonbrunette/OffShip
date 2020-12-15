@@ -1,7 +1,7 @@
+//TODO: This code is not re-writtenimage
+function getProductDetails(id) {
 
-function getProductDetails(asin) {
-
-    var link = `https://${window.location.hostname}/gp/product/${asin}/`;
+    var link = `https://${window.location.hostname}/gp/product/${id}/`;
     
     var xhr = new XMLHttpRequest();
     xhr.open("GET", link, true);
@@ -14,7 +14,7 @@ function getProductDetails(asin) {
 
             //appendMessage(resp);
 
-            updateProductInLocalCache(asin, productData.weight, productData.dimentions);
+            updateProductInLocalCache(id, productData.weight, productData.dimentions);
         }
     }
 
@@ -22,7 +22,7 @@ function getProductDetails(asin) {
     return link;
 }
 
-//TODO: This code is not re-written
+//TODO: This code is not re-writtenimage
 function ReadDOMForWalmartBasket(document_root) {
    
     var count = 0;
@@ -154,7 +154,7 @@ function walmartAddToCart(event) {
         var linkSplit = linkHref.split("/")
         var sku = linkSplit[linkSplit.length - 1];
 
-        var item = { store: "Walmart.ca", asin: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, inCart: "y" };
+        var item = { store: "Walmart.ca", id: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, inCart: "y" };
         updateFullProductInLocalCache(item);
         //getWalmartProductDetails(linkHref); //lazy load errors.
     }
@@ -183,7 +183,7 @@ function walmartAddToCartUS(event) {
         var linkSplit = linkHref.split("/")
         var sku = linkSplit[linkSplit.length - 1];
 
-        var item = { store: "Walmart.com", asin: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, inCart: "y" };
+        var item = { store: "Walmart.com", id: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, inCart: "y" };
         updateFullProductInLocalCache(item);
         //getWalmartProductDetails(linkHref); //lazy load errors.
     }
@@ -211,8 +211,9 @@ function walmartAddToCartFromSuggestionsUS(event) {
         var price = parentElm.getElementsByClassName("price-group")[0].innerText;
         var linkSplit = linkHref.split("/")
         var sku = linkSplit[linkSplit.length - 1];
+        sku = sku.split("?")[0];
 
-        var item = { store: "Walmart.com", asin: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, inCart: "y" };
+        var item = { store: "Walmart.com", id: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, inCart: "y" };
         updateFullProductInLocalCache(item);
         //getWalmartProductDetails(linkHref); //lazy load errors.
     }
@@ -258,7 +259,7 @@ function walmartAddToCartProductPage(event) {
         var detailsDiv = document.getElementsByClassName("css-uy642q e1yg7dmx3")[0].children[0];
         var details = extractWalmartDetails(detailsDiv);
 
-        var item = { store: "Walmart.ca", asin: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
+        var item = { store: "Walmart.ca", id: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
         updateFullProductInLocalCache(item);
     }
     catch (err) {
@@ -285,7 +286,7 @@ function walmartAddToCartProductPageUS(event) {
         //var detailsDiv = document.getElementsByClassName("css-uy642q e1yg7dmx3")[0].children[0];
         //var details = extractWalmartDetails(detailsDiv);
 
-        //var item = { store: "Walmart.ca", asin: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
+        //var item = { store: "Walmart.ca", id: sku, description: desc, link: linkHref, imgSrc: imgSrc, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
         //updateFullProductInLocalCache(item);
     }
     catch (err) {

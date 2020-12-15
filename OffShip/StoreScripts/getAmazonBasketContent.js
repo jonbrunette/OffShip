@@ -1,3 +1,19 @@
+function getPostalCode() {
+    locDiv = document.getElementById('nav-global-location-slot');
+
+    if (typeof itemContentList === 'undefined')
+        return "<unknown>";
+
+    var loc = locDiv.getElementsByClassName("nav-line-2")[0].innerText.trim();
+
+    var storage = chrome.storage.local;
+    var obj = {};
+    obj["location"] = loc;
+    storage.set(obj);
+
+    return loc;
+}
+
 function getProductDataFormat1(pageStr) {
     var tableStartIndex = pageStr.indexOf("productDetails_techSpec_section_1");
     var tableEndIndex = pageStr.indexOf("</table>", tableStartIndex);
@@ -153,8 +169,6 @@ function getProductDetails(asin) {
             var resp = xhr.responseText;
             var productData = extractProductData(resp);
 
-            //appendMessage(resp);
-
             updateProductInLocalCache(asin, productData.weight, productData.dimentions);
         }
     }
@@ -176,7 +190,7 @@ function getProductDetailsAndStore(asin, description, link, imgSrc, price) {
 
             //appendMessage("Inner ASIN: " + asin + ", " + price + ", " + productData.dimentions);
             //appendMessage(resp);
-            var item = { store: "Amazon", asin: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: productData.weight, dimentions: productData.dimentions, inCart: "y" };
+            var item = { store: "Amazon", id: asin, description: description, link: link, imgSrc: imgSrc, price: price, weight: productData.weight, dimentions: productData.dimentions, inCart: "y" };
             updateFullProductInLocalCache(item);
         }
     }
@@ -256,10 +270,139 @@ function ReadDOMForBasket(document_root) {
     //return `<table><tr><td colspan='4'>Found ${count} items:</td></tr> ${strItems}<tr><td colspan='4'></td>${postalCode}</tr></table>`;    
 }
 
+function AddActionLinksToPage(document_root) {
+    //Applies to amazon only
+    var list = document_root.getElementsByClassName("sc-list-body");
+
+    try {
+        for (i = 0; i < list.length; i++) {
+            if (list[i].hasAttribute("data-name") && list[i].getAttribute("data-name") == "Active Items") {
+
+                innerList = list[i].getElementsByClassName("sc-list-item");
+
+                if (typeof innerList === 'undefined' || innerList.length == 0)
+                    continue;
+
+                for (j = 0; j < innerList.length; j++) {
+                    try {
+                        itemContentList = innerList[j].getElementsByClassName("sc-list-item-content");
+
+                        if (typeof itemContentList === 'undefined' || itemContentList.length == 0)
+                            continue;
+
+                        var asin = innerList[j].getAttribute("data-asin");
+                        addActionLink(itemContentList[0], asin);
+                    }
+                    catch (innerErr) {
+                        console.log("Error in adding ActionLink: " + innerErr.message);
+                        return "Error in adding ActionLink: " + innerErr.message;
+                    }
+                }
+            }
+        }
+
+        console.log("Finished adding action links");
+    }
+    catch (err) {
+        console.log(err.message);
+        return err.message;
+    }
+}
+
+function openCarbonOffset(event) {
+    var clickedElement = event.target;
+    var asin = clickedElement.getAttribute("product-id");
+
+    var newURL = `chrome-extension://${chrome.runtime.id}/buyoffset.html?productId=${asin}`;
+    window.open(newURL);
+}
+
+function addAmazonWatchers(doc) {
+    var count = 0;
+    var addToCartButton = doc.getElementById("add-to-cart-button");
+
+    if (addToCartButton != null) {
+        addToCartButton.addEventListener('click', amazonAddToCart);
+        count++;
+    }
+
+    //var addButtons = doc.getElementsByClassName("add-to-cart-btn"); 
+
+    //for (i = 0; i < addButtons.length; i++) {
+    //    addButtons[i].addEventListener('click', amazonAddToCart);
+    //}
+
+    console.log(`Finished adding ${count} listeners`);
+}
+
+function amazonAddToCart(event) {
+    var source = event.target;
+
+    var linkSplit = window.location.href.split("/");
+    var id = "";
+
+    for (i = 0; i < linkSplit.length; i++) {
+        if (linkSplit[i].toLowerCase() == "product") {
+            id = linkSplit[i + 1]
+            break;
+        }
+    }
+
+    var desc = document.getElementById("productTitle").innerText;
+    var price = document.getElementById("priceblock_ourprice").innerText;
+    price = price.split("$")[1].trim();
+
+    var detailTable = document.getElementById("productDetails_techSpec_section_1");
+    var details = extractProductDataFromTable(detailTable);
+    var image = document.getElementById("landingImage");
+
+    var item = { store: "Amazon", id: id, description: desc, link: window.location.href, imgSrc: image.src, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
+    updateFullProductInLocalCache(item);
+}
+
+
+function addActionLink(actionListDiv, asin) {
+
+    //sc-list-item-content ->  sc-action-links
+    itemActionList = actionListDiv.getElementsByClassName("sc-action-links");
+
+    if (itemActionList[0].hasAttribute("carbon-link-added"))
+        return;
+
+    var iSeperator = document.createElement("i");
+    iSeperator.setAttribute("class", "a-icon a-icon-text-separator sc-action-separator");
+    iSeperator.setAttribute("role", "img");
+    iSeperator.setAttribute("aria-label", "|");
+
+    var span = document.createElement("span");
+    span.setAttribute("class", "a-declarative a-size-small");
+    //span.setAttribute("data-action", "sc-item-action");
+
+    var inputBtn = document.createElement("input");
+    inputBtn.setAttribute("class", "a-declarative offsetButtonLink");
+    inputBtn.setAttribute("type", "button");
+    inputBtn.setAttribute("value", "Buy carbon offset for the planet");
+    inputBtn.setAttribute("product-id", asin);
+    inputBtn.addEventListener('click', openCarbonOffset);
+
+    span.appendChild(inputBtn);
+    
+    itemActionList[0].setAttribute("carbon-link-added", "true");
+    itemActionList[0].appendChild(iSeperator);
+    itemActionList[0].appendChild(span);
+
+    return;
+}
+
 chrome.storage.local.get(null, function (data) {
     storageCache = data;
-
-    if (window.location.hostname.toLocaleLowerCase().includes("amazon.")) {
-        ReadDOMForBasket(document);
-    }
 });
+
+window.onload = function () {
+    if (window.location.hostname.toLocaleLowerCase().includes("amazon.")) {
+        addAmazonWatchers(document);
+        ReadDOMForBasket(document);
+        getPostalCode();
+        AddActionLinksToPage(document);
+    }
+}
