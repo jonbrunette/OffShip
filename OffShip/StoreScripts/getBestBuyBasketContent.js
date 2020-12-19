@@ -82,10 +82,6 @@ function ReadDOMForBestBuyBasket(document_root) {
     }
 }
 
-chrome.storage.local.get(null, function (data) {
-    storageCache = data;
-
-    if (window.location.hostname.toLocaleLowerCase().includes("bestbuy.")) {
-        ReadDOMForBestBuyBasket(document);
-    }
-});
+if (window.location.hostname.toLocaleLowerCase().includes("bestbuy.")) {
+    ReadDOMForBestBuyBasket(document);
+}

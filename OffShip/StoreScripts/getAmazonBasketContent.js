@@ -117,17 +117,20 @@ function extractProductDataFromTable(table) {
 
     for (var i = 0, row; row = table.rows[i]; i++) {
         for (var j = 0, col; col = row.cells[j]; j++) {
-            if (col.innerText.trim() == "Item Weight") {
+
+            var colText = col.innerText.trim();
+
+            if (colText == "Item Weight") {
                 foundWeight = true;
                 weight = row.cells[j + 1].innerText.trim();
             }
 
-            if (col.innerText.trim() == "Shipping Weight") {
+            if (colText == "Shipping Weight") {
                 foundWeight = true;
                 shippingWeight = row.cells[j + 1].innerText.trim();
             }
 
-            if (col.innerText.trim() == "Product Dimensions") {
+            if (colText == "Product Dimensions" || colText == "Parcel Dimensions") {
 
                 var dim = row.cells[j + 1].innerText.trim();
 
@@ -219,11 +222,16 @@ function ReadDOMForBasket(document_root) {
                 for (j = 0; j < innerList.length; j++) {
                     try {
 
-                        var itemid = innerList[j].getAttribute("data-itemid");
-                        var price = innerList[j].getAttribute("data-price");
                         var asin = innerList[j].getAttribute("data-asin");
 
                         itemArray.push(asin);
+
+                        //If we have in cache already, skip
+                        if (typeof storageCache[asin] !== 'undefined' && storageCache[asin] !== "")
+                            continue;
+
+                        var itemid = innerList[j].getAttribute("data-itemid");
+                        var price = innerList[j].getAttribute("data-price");
 
                         itemContentList = innerList[j].getElementsByClassName("sc-list-item-content");
 
@@ -234,25 +242,20 @@ function ReadDOMForBasket(document_root) {
                         var itemDesc = img.getAttribute("alt");
                         var itemImgSrc = img.getAttribute("src");
                         var link = `https://${window.location.hostname}/gp/product/${asin}/`;
+                        
+                        var product = { id: asin, description: itemDesc, link: link, imgSrc: itemImgSrc, price: price, inCart: "y"};
+                        var rowStr = formatItemRow(product);
 
-                        if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
-                            var product = { id: asin, description: itemDesc, link: link, imgSrc: itemImgSrc, price: price, inCart: "y"};
-                            var rowStr = formatItemRow(product);
+                        chrome.runtime.sendMessage({
+                            action: "appendBasketContent",
+                            source: rowStr
+                        });
 
-                            chrome.runtime.sendMessage({
-                                action: "appendBasketContent",
-                                source: rowStr
-                            });
-
-                            getProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
-                            console.log(`${asin} not found in local cache, adding now`);
-                        }
-
+                        getProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
+                        console.log(`${asin} not found in local cache, adding now`);
                         adjustCache(itemArray);
                     }
                     catch (innerErr) {
-                        console.log(innerErr.message);
-                        appendMessage("Error in getting product details: " + innerErr.message);
                         sendError(window.location.href, innerErr.message, "Error in getting product details");
                         return "Error in getting product details: " + innerErr.message;
                     }
@@ -261,8 +264,6 @@ function ReadDOMForBasket(document_root) {
         }
     }
     catch (err) {
-        console.log(err.message);
-        appendMessage(err.message);
         sendError(window.location.href, err.message, "Error in ReadDOMForAmazonBasket");
         return err.message;
     }   
@@ -304,7 +305,7 @@ function AddActionLinksToPage(document_root) {
         console.log("Finished adding action links");
     }
     catch (err) {
-        console.log(err.message);
+        console.error(err.message);
         return err.message;
     }
 }
@@ -317,7 +318,7 @@ function openCarbonOffset(event) {
     window.open(newURL);
 }
 
-function addAmazonWatchers(doc) {
+function addAmazonWatchers(doc, source) {
     var count = 0;
     var addToCartButton = doc.getElementById("add-to-cart-button");
 
@@ -332,32 +333,45 @@ function addAmazonWatchers(doc) {
     //    addButtons[i].addEventListener('click', amazonAddToCart);
     //}
 
-    console.log(`Finished adding ${count} listeners`);
+    if (count > 0)
+        addedAmazonWatchers = true;
+
+    console.log(`Finished adding ${count} listeners from ${source}`);
 }
 
 function amazonAddToCart(event) {
     var source = event.target;
+    var link = window.location.href;
 
-    var linkSplit = window.location.href.split("/");
-    var id = "";
+    try {
+        var id = document.getElementById("ASIN").value;
+        var desc = document.getElementById("productTitle").innerText;
+        var price = document.getElementById("priceblock_ourprice")
 
-    for (i = 0; i < linkSplit.length; i++) {
-        if (linkSplit[i].toLowerCase() == "product") {
-            id = linkSplit[i + 1]
-            break;
+        if (price === null) {
+            price = document.getElementById("priceblock_saleprice")
         }
+
+        if (price === null) {
+            price = document.getElementById("priceblock_dealprice")
+        }
+
+        price = price.innerText;
+        price = price.split("$")[1].trim();
+
+        var detailTable = document.getElementById("productDetails_techSpec_section_1");
+
+        //TODO: id="productDetails_db_sections" for scenarios where info is in there instead
+
+        var details = extractProductDataFromTable(detailTable);
+        var image = document.getElementById("landingImage");
+
+        var item = { store: "Amazon", id: id, description: desc, link: link, imgSrc: image.src, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
+        updateFullProductInLocalCache(item);
     }
-
-    var desc = document.getElementById("productTitle").innerText;
-    var price = document.getElementById("priceblock_ourprice").innerText;
-    price = price.split("$")[1].trim();
-
-    var detailTable = document.getElementById("productDetails_techSpec_section_1");
-    var details = extractProductDataFromTable(detailTable);
-    var image = document.getElementById("landingImage");
-
-    var item = { store: "Amazon", id: id, description: desc, link: window.location.href, imgSrc: image.src, price: price, weight: details.weight, dimentions: details.dimentions, inCart: "y" };
-    updateFullProductInLocalCache(item);
+    catch (err) {
+        sendError(link, err, "Error in amazonAddToCart");
+    }
 }
 
 
@@ -394,15 +408,21 @@ function addActionLink(actionListDiv, asin) {
     return;
 }
 
-chrome.storage.local.get(null, function (data) {
-    storageCache = data;
-});
+var addedAmazonWatchers = false;
 
-window.onload = function () {
-    if (window.location.hostname.toLocaleLowerCase().includes("amazon.")) {
-        addAmazonWatchers(document);
-        ReadDOMForBasket(document);
-        getPostalCode();
-        AddActionLinksToPage(document);
-    }
+if (window.location.hostname.toLocaleLowerCase().includes("amazon.")) {
+
+    window.addEventListener("load", amazonOnLoad);
+
+    if(!addedAmazonWatchers)
+        addAmazonWatchers(document, "ScriptLoad");
+}
+
+function amazonOnLoad() {
+    if (!addedAmazonWatchers)
+        addAmazonWatchers(document, "Onload");
+
+    ReadDOMForBasket(document);
+    getPostalCode();
+    AddActionLinksToPage(document);
 }

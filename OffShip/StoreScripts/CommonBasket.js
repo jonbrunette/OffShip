@@ -1,5 +1,9 @@
 var storageCache = {};
 
+chrome.storage.local.get(null, function (data) {
+    storageCache = data;
+});
+
 function htmlToElement(html) {
     var template = document.createElement('template');
     template.innerHTML = html;
@@ -24,7 +28,10 @@ function appendMessage(message) {
 function sendError(page, error, hint) {
     //also send date, version of extension
     //throttle client side for repeat errors. Don't want to spam 
-    console.log(`Error found on ${page} Error: ${error} Hint: ${hint}`);
+    var d = new Date();
+    var dateStr = d.toISOString();
+
+    console.error(`${dateStr} - Error found on ${page} Error: ${error} Hint: ${hint}`);
     appendMessage(error);
 }
 
@@ -160,4 +167,56 @@ function formatItemRowFromProduct(itemid, product) {
     var strImg = "<img src='" + product.imgSrc + "' alt='" + product.itemDesc + "' width='64' item-id='" + itemid + "'>";
     var strRow = `<td>${strImg}</td><td>${itemLink}</td><td>${strPrice}</td><td><a href=''>Purchase Offset</a></td>`;
     return strRow;
+}
+
+var observeDOM = (function () {
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+    return function (obj, callback) {
+        if (!obj || obj.nodeType !== 1) return;
+
+        if (MutationObserver) {
+            // define a new observer
+            var mutationObserver = new MutationObserver(callback)
+
+            // have the observer observe foo for changes in children
+            mutationObserver.observe(obj, { childList: true, subtree: true })
+            return mutationObserver
+        }
+
+        // browser support fallback
+        else if (window.addEventListener) {
+            obj.addEventListener('DOMNodeInserted', callback, false)
+            obj.addEventListener('DOMNodeRemoved', callback, false)
+        }
+    }
+})()
+
+
+function scanForAddToBasket(m, className, clickHandler) {
+    var countAdded = 0;
+
+    for (i = 0; i < m.length; i++) {
+        for (j = 0; j < m[i].addedNodes.length; j++) {
+            try {
+                var node = m[i].addedNodes[j];
+
+                if (node.nodeType !== 1)
+                    continue;
+
+                var nodeClass = node.getAttribute("class");
+
+                if (nodeClass !== null && typeof nodeClass !== 'undefined' && nodeClass.includes(className)) {
+                    node.addEventListener('click', clickHandler);
+                    countAdded++;
+                }
+            }
+            catch (err) {
+                console.error(err.message);
+            }
+        }
+    }
+
+    if (countAdded > 0)
+        console.log(`Finished adding ${countAdded} listeners from ObserveChange`);
 }

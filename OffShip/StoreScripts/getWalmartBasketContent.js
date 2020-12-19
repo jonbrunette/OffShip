@@ -1,100 +1,4 @@
-//TODO: This code is not re-writtenimage
-function getProductDetails(id) {
-
-    var link = `https://${window.location.hostname}/gp/product/${id}/`;
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", link, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            // JSON.parse does not evaluate the attacker's scripts.
-            //var resp = JSON.parse(xhr.responseText);
-            var resp = xhr.responseText;
-            var productData = extractProductData(resp);
-
-            //appendMessage(resp);
-
-            updateProductInLocalCache(id, productData.weight, productData.dimentions);
-        }
-    }
-
-    xhr.send();
-    return link;
-}
-
-//TODO: This code is not re-writtenimage
-function ReadDOMForWalmartBasket(document_root) {
-   
-    var count = 0;
-    var list = document_root.getElementsByClassName("sc-list-body");
-    
-    var itemArray = [];
-    var innerList = [];
-
-    try {
-        for (i = 0; i < list.length; i++) {
-            if (list[i].hasAttribute("data-name") && list[i].getAttribute("data-name") == "Active Items") {
-
-                innerList = list[i].getElementsByClassName("sc-list-item");
-
-                if (typeof innerList === 'undefined' || innerList.length == 0)
-                    continue;
-
-                for (j = 0; j < innerList.length; j++) {
-                    try {
-
-                        var itemid = innerList[j].getAttribute("data-itemid");
-                        var price = innerList[j].getAttribute("data-price");
-                        var asin = innerList[j].getAttribute("data-asin");
-
-                        itemArray.push(asin);
-
-                        itemContentList = innerList[j].getElementsByClassName("sc-list-item-content");
-
-                        if (typeof itemContentList === 'undefined' || itemContentList.length == 0)
-                            continue;
-                       
-                        var img = itemContentList[0].getElementsByTagName("img")[0];
-                        var itemDesc = img.getAttribute("alt");
-                        var itemImgSrc = img.getAttribute("src");
-                        var link = `https://${window.location.hostname}/gp/product/${asin}/`;
-
-                        if (typeof storageCache[asin] === 'undefined' || storageCache[asin] === "") {
-                            var product = { id: asin, description: itemDesc, link: link, imgSrc: itemImgSrc, price: price, inCart: "y" };
-                            var rowStr = formatItemRow(product);
-
-                            chrome.runtime.sendMessage({
-                                action: "appendBasketContent",
-                                source: rowStr
-                            });
-
-                            getProductDetailsAndStore(asin, itemDesc, link, itemImgSrc, price);
-                            console.log(`${asin} not found in local cache, adding now`);
-                        }
-
-                        adjustCache(itemArray);
-                    }
-                    catch (innerErr) {
-                        console.log(innerErr.message);
-                        appendMessage("Error in getting product details: " + innerErr.message);
-                        sendError(window.location.href, innerErr.message, "Error in getting product details");
-                        return "Error in getting product details: " + innerErr.message;
-                    }
-                }
-            }
-        }
-    }
-    catch (err) {
-        console.log(err.message);
-        appendMessage(err.message);
-        sendError(window.location.href, err.message, "Error in ReadDOMForWalmartBasket");
-        return err.message;
-    }   
-    //return "Blank Cart";
-    //return `<table><tr><td colspan='4'>Found ${count} items:</td></tr> ${strItems}<tr><td colspan='4'></td>${postalCode}</tr></table>`;    
-}
-
-function addWalmartWatcher(doc) {
+function addWalmartWatcher(doc, source) {
     var addButtons = doc.getElementsByClassName("add-to-cart-btn");
     var count = addButtons.length;
 
@@ -130,7 +34,10 @@ function addWalmartWatcher(doc) {
         addButtons[i].addEventListener('click', walmartAddToCartFromSuggestionsUS);
     }
 
-    console.log(`Finished adding ${count} listeners`);
+    if (count > 0)
+        addedWalmartWatchers = true;
+
+    console.log(`Finished adding ${count} listeners from ${source}`);
 }
 
 function walmartAddToCart(event) {
@@ -255,6 +162,7 @@ function walmartAddToCartProductPage(event) {
         var price = extractWalmartPrice(infoDiv.getElementsByClassName("css-k008qs e1ufqjyx0")[0].innerText);
         var linkSplit = linkHref.split("/")
         var sku = linkSplit[linkSplit.length - 1];
+        sku = sku.split("?")[0];
 
         var detailsDiv = document.getElementsByClassName("css-uy642q e1yg7dmx3")[0].children[0];
         var details = extractWalmartDetails(detailsDiv);
@@ -361,13 +269,27 @@ function extractWalmartPrice(text) {
     return price;
 }
 
-chrome.storage.local.get(null, function (data) {
-    storageCache = data;
-});
+var addedWalmartWatchers = false;
 
-window.onload = function () {
-    if (window.location.hostname.toLocaleLowerCase().includes("walmart.")) {
+if (window.location.hostname.toLocaleLowerCase().includes("walmart.")) {
+
+    window.addEventListener("load", walmartOnLoad);
+
+    //var ele = document.getElementById("endeca-rslc-182cdf33");
+    observeDOM(document.body, function (m) {
+        //m.forEach(record => record.addedNodes.length & addedNodes.push(...record.addedNodes))
+        //m.forEach(record => record.removedNodes.length & removedNodes.push(...record.removedNodes))
+
+        scanForAddToBasket(m, "add-to-cart-btn", walmartAddToCart);
+    });
+
+    if(!addedWalmartWatchers)
+        addWalmartWatcher(document, "ScriptLoad");
+}
+
+function walmartOnLoad() {
+    if (window.location.hostname.toLocaleLowerCase().includes("walmart.") && !addedWalmartWatchers) {
         //ReadDOMForWalmartBasket(document);
-        addWalmartWatcher(document);
+        addWalmartWatcher(document, "Onload");
     }
 }
